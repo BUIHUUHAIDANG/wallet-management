@@ -25,7 +25,7 @@ public:
 	bool getisManager() const;
 	bool getFirstlogin() const;
 	void printInfo() const;
-	void printInfoo() const;
+	
 	
 };
 #endif
