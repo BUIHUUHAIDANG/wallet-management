@@ -29,11 +29,10 @@ public:
     void printInfo() const;
 };
 
-std::string fakeHash(const std::string& input);
-std::string generateRandomPassword(int length = 8);
+string generateRandomPassword(int length = 8);
 UserAccount createUserFromInput();
-void saveUserToFile(const UserAccount& user, const std::string& filename = "users.txt");
-bool updatePasswordInFile(const std::string& username, const std::string& newPassword, const std::string& filename = "users.txt");
-bool loginAndHandleFirstLogin(const std::string& username, const std::string& password);
+void saveUserToFile(const UserAccount& user, const string& filename = "users.txt");
+bool updatePasswordInFile(const string& username, const string& newPassword, const string& filename = "users.txt");
+bool loginAndHandleFirstLogin(const string& username, const string& password);
 
 #endif
