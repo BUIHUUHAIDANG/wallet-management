@@ -1,5 +1,6 @@
 #include "UserAccount.h"
 #include<iostream>
+#include <cstdlib>
 
 
 
@@ -52,3 +53,34 @@ string fakehash(const string& input) {
 		return hashed;
 	}
 }
+string generateRamdompassword(int length) {
+	string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	string password;
+	for (int i = 0;i < length;i++) {
+		password += chars[rand() % chars.size()];
+	}
+	return password;
+}
+UserAccount createUserfrominput() {
+	string uname, name, phone, password;
+	bool isManager;
+	cout << "Ten tai khoan cua ban la:";
+	getline(cin, uname);
+	cout << "Ten day du cua ban la:";
+	getline(cin, name);
+	cout << "So dien thoai cua ban la:";
+	getline(cin, phone);
+	cout << "Tai khoan nay la cua quan ly (1 = Co, 0 = Khong)";
+	cin >> isManager;
+	cin.ignore();
+	cout << "Nhap mat khau (bo trong de tu dong tao): ";
+	getline(cin, password);
+	if (password.empty()) {
+		password = generateRamdompassword(8);
+		cout << "mat khau tu dong cua ban la:" << password << endl;
+	}
+	UserAccount user(uname, name, phone, isManager);
+	user.setPassword(fakehash(password));
+	return user;
+}
+

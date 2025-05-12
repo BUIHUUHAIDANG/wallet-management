@@ -28,4 +28,6 @@ public:
 	
 };
 string fakehash(const string& input);
+string generateRamdompassword(int length);
+UserAccount createUserfrominput();
 #endif
