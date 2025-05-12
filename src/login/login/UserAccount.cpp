@@ -45,3 +45,10 @@ void UserAccount::printInfo() const {
 	cout << "Is Manager: " << (isManager ? "Yes" : "No") << endl;
 	cout<< "First Login: " << (firstlogin ? "Yes" : "No") << endl;
 }
+string fakehash(const string& input) {
+	string hashed;
+	for (char c : input) {
+		hashed += (c + 3);
+		return hashed;
+	}
+}
