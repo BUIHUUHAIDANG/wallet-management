@@ -70,20 +70,20 @@ string generateRamdompassword(int length) {
 UserAccount createUserfrominput() {
 	string uname, name, phone, password;
 	bool isManager;
-	cout << "Ten tai khoan cua ban la:";
+	cout << "Username:";
 	getline(cin, uname);
-	cout << "Ten day du cua ban la:";
+	cout << "Fullname:";
 	getline(cin, name);
-	cout << "So dien thoai cua ban la:";
+	cout << "PhoneNumber:";
 	getline(cin, phone);
-	cout << "Tai khoan nay la cua quan ly (1 = Co, 0 = Khong)";
+	cout << "Is Manager ? (1 = Yes, 0 = No) :";
 	cin >> isManager;
 	cin.ignore();
-	cout << "Nhap mat khau (bo trong de tu dong tao): ";
+	cout << "Input password (empty to create random password) ";
 	getline(cin, password);
 	if (password.empty()) {
 		password = generateRamdompassword(8);
-		cout << "mat khau tu dong cua ban la:" << password << endl;
+		cout << "Your random password :" << password << endl;
 	}
 	UserAccount user(uname, name, phone, isManager);
 	user.setPassword(fakehash(password));
@@ -156,14 +156,14 @@ bool loginAndHandleFirstLogin(const string& username, const string& password) {
 
 		if (uname == username && pw == hashedPassword) {
 			if (firstLogin) {
-				cout << "[!] Lan dang nhap dau tien. Vui long doi mat khau moi:\nMoi nhap mat khau moi: ";
+				cout << "[!] first login. change your password please:\n Input new password: ";
 				string newPass;
 				getline(cin, newPass);
 				updatePasswordInFile(username, fakehash(newPass), "users.txt");
-				cout << "[✓] Doi mat khau thanh cong.\n";
+				cout << "[✓] Complete change.\n";
 			}
 			else {
-				cout << "[✓] Dang nhap thanh cong.\n";
+				cout << "[✓] successful login.\n";
 			}
 			return true;
 		}

@@ -6,29 +6,29 @@
 int main() {
     srand(time(0));
     int choice;
-    cout << "1. Dang ky\n2. Dang nhap\nChon chuc nang: ";
+    cout << "1. Register\n2. Sign Up\n Make choice: ";
     cin >> choice;
     cin.ignore();
 
     if (choice == 1) {
         UserAccount user = createUserfrominput();
         saveUsertofile(user,"users.txt");
-        cout << "[✓] Dang ky thanh cong!\n";
+        cout << "[✓] Successful login.\n";
         user.printInfo();
     }
     else if (choice == 2) {
         string uname, password;
-        cout << "Nhap username: ";
+        cout << "Input username: ";
         getline(cin, uname);
-        cout << "Nhap mat khau: ";
+        cout << "Input password: ";
         getline(cin, password);
 
         if (!loginAndHandleFirstLogin(uname, password)) {
-            cout << "[X] Sai thong tin dang nhap.\n";
+            cout << "[X] Wrong sign up.\n";
         }
     }
     else {
-        cout << "[X] Lua chon khong hop le.\n";
+        cout << "[X] Invalid selection.\n";
     }
 
     return 0;
