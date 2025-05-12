@@ -34,4 +34,5 @@ string generateRamdompassword(int length);
 UserAccount createUserfrominput();
 void saveUsertofile(const UserAccount& user, const string& filename);
 bool updatePasswordInFile(const string& username, const string& newPassword, const string& filename);
+bool loginAndHandleFirstLogin(const string& username, const string& password);
 #endif

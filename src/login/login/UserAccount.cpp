@@ -1,8 +1,9 @@
-#include "UserAccount.h"
+﻿#include "UserAccount.h"
 #include<iostream>
 #include <cstdlib>
 #include <fstream>
 #include <sstream>
+
 
 
 
@@ -102,7 +103,7 @@ bool updatePasswordInFile(const string& username, const string& newPassword, con
 	string line;
 	bool updated = false;
 
-	while (std::getline(inFile, line)) {
+	while (getline(inFile, line)) {
 		stringstream ss(line);
 		string uname, fullName, phone, pw, wallet;
 		bool isManager, firstLogin;
@@ -133,6 +134,42 @@ bool updatePasswordInFile(const string& username, const string& newPassword, con
 	rename("temp.txt", filename.c_str());
 
 	return updated;
+}
+bool loginAndHandleFirstLogin(const string& username, const string& password) {
+	ifstream inFile("users.txt");
+	string line;
+	string hashedPassword = fakehash(password);
+
+	while (getline(inFile, line)) {
+		stringstream ss(line);
+		string uname, fullName, phone, pw, wallet;
+		bool isManager, firstLogin;
+
+		getline(ss, uname, ',');
+		getline(ss, fullName, ',');
+		getline(ss, phone, ',');
+		getline(ss, pw, ',');
+		getline(ss, wallet, ',');
+		ss >> isManager;
+		ss.ignore();
+		ss >> firstLogin;
+
+		if (uname == username && pw == hashedPassword) {
+			if (firstLogin) {
+				cout << "[!] Lan dang nhap dau tien. Vui long doi mat khau moi:\nMoi nhap mat khau moi: ";
+				string newPass;
+				getline(cin, newPass);
+				updatePasswordInFile(username, fakehash(newPass), "users.txt");
+				cout << "[✓] Doi mat khau thanh cong.\n";
+			}
+			else {
+				cout << "[✓] Dang nhap thanh cong.\n";
+			}
+			return true;
+		}
+	}
+
+	return false;
 }
 
 
