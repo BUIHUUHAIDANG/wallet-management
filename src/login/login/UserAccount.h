@@ -1,6 +1,7 @@
 #ifndef USER_ACCOUNT_H
 #define USER_ACCOUNT_H
 
+
 #include <string>
 using namespace std;
 class UserAccount {
@@ -18,6 +19,7 @@ public:
 	//dat mat khau.
 	void setPassword(const string& pw);
 	void setFirstlogin(bool status);
+	string getPasswordHash() const;
 	string getUsername() const;
 	string getFullname() const;
 	string getPhonenumber() const;
@@ -30,4 +32,6 @@ public:
 string fakehash(const string& input);
 string generateRamdompassword(int length);
 UserAccount createUserfrominput();
+void saveUsertofile(const UserAccount& user, const string& filename);
+bool updatePasswordInFile(const string& username, const string& newPassword, const string& filename);
 #endif

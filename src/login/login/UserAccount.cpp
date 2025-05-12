@@ -1,6 +1,8 @@
 #include "UserAccount.h"
 #include<iostream>
 #include <cstdlib>
+#include <fstream>
+#include <sstream>
 
 
 
@@ -21,6 +23,9 @@ void UserAccount::setFirstlogin(bool status) {
 }
 string UserAccount::getUsername() const {
 	return username;
+}
+string UserAccount::getPasswordHash() const { 
+	return passwordHash;
 }
 	
 string UserAccount::getFullname() const {
@@ -83,4 +88,52 @@ UserAccount createUserfrominput() {
 	user.setPassword(fakehash(password));
 	return user;
 }
+void saveUsertofile(const UserAccount& user, const string& filename) {
+	ofstream file(filename, ios::app);
+	file << user.getUsername() << "," << user.getFullname() << "," << user.getPhonenumber() << "," << user.getPasswordHash() << "," << user.getWalletID() << "," << user.getisManager() << "," << user.getFirstlogin() << endl;
+	file.close();
+	ofstream backup("users_backup.txt", ios::app);
+	backup << user.getUsername() << "," << user.getFullname() << "," << user.getPhonenumber() << "," << user.getPasswordHash() << "," << user.getWalletID() << "," << user.getisManager() << "," << user.getFirstlogin() << endl;
+	backup.close();
+}
+bool updatePasswordInFile(const string& username, const string& newPassword, const string& filename) {
+	ifstream inFile(filename);
+	ofstream tempFile("temp.txt");
+	string line;
+	bool updated = false;
+
+	while (std::getline(inFile, line)) {
+		stringstream ss(line);
+		string uname, fullName, phone, pw, wallet;
+		bool isManager, firstLogin;
+
+		getline(ss, uname, ',');
+		getline(ss, fullName, ',');
+		getline(ss, phone, ',');
+		getline(ss, pw, ',');
+		getline(ss, wallet, ',');
+		ss >> isManager;
+		ss.ignore();
+		ss >> firstLogin;
+
+		if (uname == username) {
+			pw = newPassword;
+			firstLogin = false;
+			updated = true;
+		}
+
+		tempFile << uname << ',' << fullName << ',' << phone << ','
+			<< pw << ',' << wallet << ',' << isManager << ',' << firstLogin << '\n';
+	}
+
+	inFile.close();
+	tempFile.close();
+
+	remove(filename.c_str());
+	rename("temp.txt", filename.c_str());
+
+	return updated;
+}
+
+
 
