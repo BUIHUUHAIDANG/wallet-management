@@ -26,6 +26,6 @@ public:
 	bool getFirstlogin() const;
 	void printInfo() const;
 	
-	
 };
+string fakehash(const string& input);
 #endif
