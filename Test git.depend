@@ -1,0 +1,13 @@
+# depslib dependency file v1.0
+1747074207 source:d:\code\c++\codeblock\test git\useraccount.cpp
+	<iostream>
+	<cstdlib>
+	<fstream>
+	<sstream>
+
+1747138130 source:d:\code\c++\codeblock\test git\main.cpp
+	<cstdlib>
+	<iostream>
+	<fstream>
+	<sstream>
+
