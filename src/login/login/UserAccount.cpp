@@ -56,8 +56,8 @@ string fakehash(const string& input) {
 	string hashed;
 	for (char c : input) {
 		hashed += (c + 3);
-		return hashed;
 	}
+	return hashed;
 }
 string generateRamdompassword(int length) {
 	string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
