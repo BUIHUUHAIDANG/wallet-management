@@ -30,6 +30,7 @@ int main() {
     else {
         cout << "[X] Invalid selection.\n";
     }
+    cout << "hello world" << endl;
 
     return 0;
 }
