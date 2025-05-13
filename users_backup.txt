@@ -1,2 +1,0 @@
-haidang,bui huu hai dang,0219239,d8LwfSe[,WalletID_haidang,0,1
-anhkhoa,vu anh khoa,0129392,eVhzHk6n,WalletID_anhkhoa,0,1
