@@ -59,7 +59,7 @@ string fakehash(const string& input) {
 	}
 	return hashed;
 }
-string generateRamdompassword(int length) {
+string generateRandompassword(int length) {
 	string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 	string password;
 	for (int i = 0;i < length;i++) {
@@ -82,7 +82,7 @@ UserAccount createUserfrominput() {
 	cout << "Input password (empty to create random password) ";
 	getline(cin, password);
 	if (password.empty()) {
-		password = generateRamdompassword(8);
+		password = generateRandompassword(8);
 		cout << "Your random password :" << password << endl;
 	}
 	UserAccount user(uname, name, phone, isManager);
@@ -100,22 +100,30 @@ void saveUsertofile(const UserAccount& user, const string& filename) {
 bool updatePasswordInFile(const string& username, const string& newPassword, const string& filename) {
 	ifstream inFile(filename);
 	ofstream tempFile("temp.txt");
+	if (!inFile || !tempFile) {
+		cerr << "Error opening file.\n";
+		return false;
+	}
+
 	string line;
 	bool updated = false;
 
 	while (getline(inFile, line)) {
 		stringstream ss(line);
 		string uname, fullName, phone, pw, wallet;
-		bool isManager, firstLogin;
+		string isManagerStr, firstLoginStr;
+		bool isManager = false, firstLogin = false;
 
 		getline(ss, uname, ',');
 		getline(ss, fullName, ',');
 		getline(ss, phone, ',');
 		getline(ss, pw, ',');
 		getline(ss, wallet, ',');
-		ss >> isManager;
-		ss.ignore();
-		ss >> firstLogin;
+		getline(ss, isManagerStr, ',');
+		getline(ss, firstLoginStr);
+
+		isManager = (isManagerStr == "1" || isManagerStr == "true");
+		firstLogin = (firstLoginStr == "1" || firstLoginStr == "true");
 
 		if (uname == username) {
 			pw = newPassword;
@@ -124,14 +132,20 @@ bool updatePasswordInFile(const string& username, const string& newPassword, con
 		}
 
 		tempFile << uname << ',' << fullName << ',' << phone << ','
-			<< pw << ',' << wallet << ',' << isManager << ',' << firstLogin << '\n';
+			<< pw << ',' << wallet << ','
+			<< isManager << ',' << firstLogin << '\n';
 	}
 
 	inFile.close();
 	tempFile.close();
 
-	remove(filename.c_str());
-	rename("temp.txt", filename.c_str());
+	if (updated) {
+		remove(filename.c_str());
+		rename("temp.txt", filename.c_str());
+	}
+	else {
+		remove("temp.txt"); // Clean up unused temp file
+	}
 
 	return updated;
 }
