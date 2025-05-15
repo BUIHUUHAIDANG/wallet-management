@@ -114,6 +114,7 @@ UserAccount createUserfrominput() {
 	user.setPassword(fakehash(password));
 	return user;
 }
+
 void saveUsertofile(const UserAccount& user, const string& filename) {
 	ofstream file(filename, ios::app);
 	file << user.getUsername() << "," << user.getFullname() << "," << user.getPhonenumber() << "," << user.getPasswordHash() << "," << user.getWalletID() << "," << user.getisManager() << "," << user.getFirstlogin() << endl;
@@ -123,7 +124,7 @@ void saveUsertofile(const UserAccount& user, const string& filename) {
 	backup.close();
 }
 bool updatePasswordInFile(const string& username, const string& newPassword, const string& filename) {
-	ifstream inFile("users.txt");
+	ifstream inFile(filename);
 	ofstream tempFile("temp.txt");
 	string line;
 	bool updated = false;
@@ -184,14 +185,14 @@ bool loginAndHandleFirstLogin(const string& username, const string& password) {
 		ss.ignore();
 		ss >> firstLogin;
 
-		inFile.close();
-
 		if (uname == username && pw == hashedPassword) {
 			if (firstLogin) {
 				cout << "[!] first login. change your password please:\n Input new password: ";
 				string newPass;
 				getline(cin, newPass);
+				inFile.close();
 				updatePasswordInFile(username, fakehash(newPass), "users.txt");
+				ifstream inFile("users.txt");
 				cout << "[✓] Complete change.\n";
 			}
 			else {
@@ -200,7 +201,6 @@ bool loginAndHandleFirstLogin(const string& username, const string& password) {
 			return true;
 		}
 	}
-    inFile.close();
 	return false;
 }
 
