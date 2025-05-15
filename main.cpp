@@ -92,24 +92,63 @@ string generateRandompassword(int length) {
 	}
 	return password;
 }
+
+bool duplicateuname(const string& user) {
+    ifstream inFile("users.txt");
+    string line;
+
+    while (getline(inFile, line)) {
+		stringstream ss(line);
+		string uname, fullName, phone, pw, wallet;
+		bool isManager, firstLogin;
+
+		getline(ss, uname, ',');
+		getline(ss, fullName, ',');
+		getline(ss, phone, ',');
+		getline(ss, pw, ',');
+		getline(ss, wallet, ',');
+		ss >> isManager;
+		ss.ignore();
+		ss >> firstLogin;
+
+		if (user == uname) {
+            inFile.close();
+            return true;
+		}
+    }
+
+    inFile.close();
+    return false;
+}
+
 UserAccount createUserfrominput() {
 	string uname, name, phone, password;
 	bool isManager;
-	cout << "Username:";
-	getline(cin, uname);
-	cout << "Fullname:";
-	getline(cin, name);
-	cout << "PhoneNumber:";
-	getline(cin, phone);
-	cout << "Is Manager ? (1 = Yes, 0 = No) :";
-	cin >> isManager;
-	cin.ignore();
-	cout << "Input password (empty to create random password) ";
-	getline(cin, password);
-	if (password.empty()) {
-		password = generateRandompassword(8);
-		cout << "Your random password :" << password << endl;
+	bool check = true;
+	while (check == true) {
+        cout << "Username:";
+        getline(cin, uname);
+        if (duplicateuname(uname)) {
+            check = true;
+            cout << "[x] Username existed\n";
+            continue;
+        }
+        check = false;
+        cout << "Fullname:";
+        getline(cin, name);
+        cout << "PhoneNumber:";
+        getline(cin, phone);
+        cout << "Is Manager ? (1 = Yes, 0 = No) :";
+        cin >> isManager;
+        cin.ignore();
+        cout << "Input password (empty to create random password) ";
+        getline(cin, password);
+        if (password.empty()) {
+            password = generateRandompassword(8);
+            cout << "Your random password :" << password << endl;
+        }
 	}
+
 	UserAccount user(uname, name, phone, isManager);
 	user.setPassword(fakehash(password));
 	return user;
