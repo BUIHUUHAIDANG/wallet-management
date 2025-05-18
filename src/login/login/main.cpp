@@ -28,7 +28,7 @@ int main() {
         }
     }
     else {
-        cout << "[X] Invalid selection.\n";
+        cout << "[X] Invalid selection .\n";
     }
 
     return 0;
