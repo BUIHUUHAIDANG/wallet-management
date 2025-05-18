@@ -12,7 +12,7 @@ int main() {
 
     if (choice == 1) {
         UserAccount user = createUserfrominput();
-        saveUsertofile(user,"users.txt");
+        saveUsertofile(user, "users.txt");
         cout << "[✓] Successful login.\n";
         user.printInfo();
     }
@@ -30,7 +30,6 @@ int main() {
     else {
         cout << "[X] Invalid selection.\n";
     }
-    
 
     return 0;
 }
