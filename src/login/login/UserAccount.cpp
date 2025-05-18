@@ -134,9 +134,10 @@ void saveUsertofile(const UserAccount& user, const string& filename) {
 	backup << user.getUsername() << "," << user.getFullname() << "," << user.getPhonenumber() << "," << user.getPasswordHash() << "," << user.getWalletID() << "," << user.getisManager() << "," << user.getFirstlogin() << endl;
 	backup.close();
 }
-bool updatePasswordInFile(const string& username, const string& newPassword, const string& filename) {
+bool updatePasswordInFile(const string& username, const string& newPassword, const string& filename,const string& backupfilename) {
 	ifstream inFile(filename);
 	ofstream tempFile("temp.txt");
+	ofstream tempBackupFile("temp_backup.txt");
 	string line;
 	bool updated = false;
 
@@ -162,15 +163,24 @@ bool updatePasswordInFile(const string& username, const string& newPassword, con
 
 		tempFile << uname << ',' << fullName << ',' << phone << ','
 			<< pw << ',' << wallet << ',' << isManager << ',' << firstLogin << '\n';
+		tempBackupFile << uname << ',' << fullName << ',' << phone << ','
+			<< pw << ',' << wallet << ',' << isManager << ',' << firstLogin << '\n';
 	}
 
 	inFile.close();
 	tempFile.close();
+	tempBackupFile.close();
 
 	if (remove(filename.c_str()) != 0) {
 		perror("Error deleting original file");
 	}
 	if (rename("temp.txt", filename.c_str()) != 0) {
+		perror("Error renaming temp file");
+	}
+	if (remove(backupfilename.c_str()) != 0) {
+		perror("Error deleting original file");
+	}
+	if (rename("temp_backup.txt", backupfilename.c_str()) != 0) {
 		perror("Error renaming temp file");
 	}
 
@@ -202,7 +212,7 @@ bool loginAndHandleFirstLogin(const string& username, const string& password) {
 				string newPass;
 				getline(cin, newPass);
 				inFile.close();
-				updatePasswordInFile(username, fakehash(newPass), "users.txt");
+				updatePasswordInFile(username, fakehash(newPass), "users.txt","users_backup.txt");
 				ifstream inFile("users.txt");
 				cout << "[✓] Complete change.\n";
 			}
