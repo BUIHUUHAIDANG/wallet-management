@@ -67,24 +67,61 @@ string generateRandompassword(int length) {
 	}
 	return password;
 }
+bool duplicateuname(const string& user) {
+	ifstream inFile("users.txt");
+	string line;
+
+	while (getline(inFile, line)) {
+		stringstream ss(line);
+		string uname, fullName, phone, pw, wallet;
+		bool isManager, firstLogin;
+
+		getline(ss, uname, ',');
+		getline(ss, fullName, ',');
+		getline(ss, phone, ',');
+		getline(ss, pw, ',');
+		getline(ss, wallet, ',');
+		ss >> isManager;
+		ss.ignore();
+		ss >> firstLogin;
+
+		if (user == uname) {
+			inFile.close();
+			return true;
+		}
+	}
+
+	inFile.close();
+	return false;
+}
 UserAccount createUserfrominput() {
 	string uname, name, phone, password;
 	bool isManager;
-	cout << "Username:";
-	getline(cin, uname);
-	cout << "Fullname:";
-	getline(cin, name);
-	cout << "PhoneNumber:";
-	getline(cin, phone);
-	cout << "Is Manager ? (1 = Yes, 0 = No) :";
-	cin >> isManager;
-	cin.ignore();
-	cout << "Input password (empty to create random password) ";
-	getline(cin, password);
-	if (password.empty()) {
-		password = generateRandompassword(8);
-		cout << "Your random password :" << password << endl;
+	bool check = true;
+	while (check == true) {
+		cout << "Username:";
+		getline(cin, uname);
+		if (duplicateuname(uname)) {
+			check = true;
+			cout << "[x] Username existed\n";
+			continue;
+		}
+		check = false;
+		cout << "Fullname:";
+		getline(cin, name);
+		cout << "PhoneNumber:";
+		getline(cin, phone);
+		cout << "Is Manager ? (1 = Yes, 0 = No) :";
+		cin >> isManager;
+		cin.ignore();
+		cout << "Input password (empty to create random password) ";
+		getline(cin, password);
+		if (password.empty()) {
+			password = generateRandompassword(8);
+			cout << "Your random password :" << password << endl;
+		}
 	}
+
 	UserAccount user(uname, name, phone, isManager);
 	user.setPassword(fakehash(password));
 	return user;
@@ -100,30 +137,22 @@ void saveUsertofile(const UserAccount& user, const string& filename) {
 bool updatePasswordInFile(const string& username, const string& newPassword, const string& filename) {
 	ifstream inFile(filename);
 	ofstream tempFile("temp.txt");
-	if (!inFile || !tempFile) {
-		cerr << "Error opening file.\n";
-		return false;
-	}
-
 	string line;
 	bool updated = false;
 
 	while (getline(inFile, line)) {
 		stringstream ss(line);
 		string uname, fullName, phone, pw, wallet;
-		string isManagerStr, firstLoginStr;
-		bool isManager = false, firstLogin = false;
+		bool isManager, firstLogin;
 
 		getline(ss, uname, ',');
 		getline(ss, fullName, ',');
 		getline(ss, phone, ',');
 		getline(ss, pw, ',');
 		getline(ss, wallet, ',');
-		getline(ss, isManagerStr, ',');
-		getline(ss, firstLoginStr);
-
-		isManager = (isManagerStr == "1" || isManagerStr == "true");
-		firstLogin = (firstLoginStr == "1" || firstLoginStr == "true");
+		ss >> isManager;
+		ss.ignore();
+		ss >> firstLogin;
 
 		if (uname == username) {
 			pw = newPassword;
@@ -132,20 +161,19 @@ bool updatePasswordInFile(const string& username, const string& newPassword, con
 		}
 
 		tempFile << uname << ',' << fullName << ',' << phone << ','
-			<< pw << ',' << wallet << ','
-			<< isManager << ',' << firstLogin << '\n';
+			<< pw << ',' << wallet << ',' << isManager << ',' << firstLogin << '\n';
 	}
 
 	inFile.close();
 	tempFile.close();
 
-	if (updated) {
-		remove(filename.c_str());
-		rename("temp.txt", filename.c_str());
+	if (remove(filename.c_str()) != 0) {
+		perror("Error deleting original file");
 	}
-	else {
-		remove("temp.txt"); // Clean up unused temp file
+	if (rename("temp.txt", filename.c_str()) != 0) {
+		perror("Error renaming temp file");
 	}
+
 
 	return updated;
 }
@@ -173,7 +201,9 @@ bool loginAndHandleFirstLogin(const string& username, const string& password) {
 				cout << "[!] first login. change your password please:\n Input new password: ";
 				string newPass;
 				getline(cin, newPass);
+				inFile.close();
 				updatePasswordInFile(username, fakehash(newPass), "users.txt");
+				ifstream inFile("users.txt");
 				cout << "[✓] Complete change.\n";
 			}
 			else {
@@ -182,7 +212,7 @@ bool loginAndHandleFirstLogin(const string& username, const string& password) {
 			return true;
 		}
 	}
-
+	inFile.close();
 	return false;
 }
 
