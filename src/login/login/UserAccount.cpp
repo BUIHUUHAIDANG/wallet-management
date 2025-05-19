@@ -356,6 +356,22 @@ bool loginAndHandleFirstLogin(const string& username, const string& password) {
 	inFile.close();
 	return false;
 }
+Transation ::Transation(const string& From, const string& To, const int& Am, const bool& sta) {
+	FromID = From;
+	ToID = To;
+	Amount = Am;
+	status = sta;
+}
+Wallet::Wallet(const string& ID) {
+	WalletID = ID;
+	balance = 1000000;
+}
+string Wallet:: getID() const {
+	return WalletID;
+}
+int Wallet::getBalance() const {
+	return balance;
+}
 
 
 
