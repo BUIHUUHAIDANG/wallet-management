@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <string>
 
 using namespace std;
 
@@ -84,6 +85,16 @@ string fakehash(const string& input) {
 	}
 	return hashed;
 }
+
+/*string generateOTP(int length = 6) {
+    string num = "0123456789";
+	string OTP;
+	for (int i = 0;i < length;i++) {
+		OTP += num[rand() % num.size()];
+	}
+	return OTP;
+}*/
+
 string generateRandompassword(int length) {
 	string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 	string password;
@@ -121,6 +132,8 @@ bool duplicateuname(const string& user) {
     return false;
 }
 
+
+
 UserAccount createUserfrominput() {
 	string uname, name, phone, password;
 	bool isManager;
@@ -130,7 +143,7 @@ UserAccount createUserfrominput() {
         getline(cin, uname);
         if (duplicateuname(uname)) {
             check = true;
-            cout << "[x] Username existed\n";
+            cout << "[x] Username existed.\n";
             continue;
         }
         check = false;
@@ -162,9 +175,10 @@ void saveUsertofile(const UserAccount& user, const string& filename) {
 	backup << user.getUsername() << "," << user.getFullname() << "," << user.getPhonenumber() << "," << user.getPasswordHash() << "," << user.getWalletID() << "," << user.getisManager() << "," << user.getFirstlogin() << endl;
 	backup.close();
 }
-bool updatePasswordInFile(const string& username, const string& newPassword, const string& filename) {
+bool updatePasswordInFile(const string& username, const string& newPassword, const string& filename, const string& backupfilename) {
 	ifstream inFile(filename);
 	ofstream tempFile("temp.txt");
+	ofstream tempBackupFile("temp_backup.txt");
 	string line;
 	bool updated = false;
 
@@ -190,10 +204,13 @@ bool updatePasswordInFile(const string& username, const string& newPassword, con
 
 		tempFile << uname << ',' << fullName << ',' << phone << ','
 			<< pw << ',' << wallet << ',' << isManager << ',' << firstLogin << '\n';
+        tempBackupFile << uname << ',' << fullName << ',' << phone << ','
+			<< pw << ',' << wallet << ',' << isManager << ',' << firstLogin << '\n';
 	}
 
 	inFile.close();
     tempFile.close();
+    tempBackupFile.close();
 
     if (remove(filename.c_str()) != 0) {
         perror("Error deleting original file");
@@ -201,10 +218,187 @@ bool updatePasswordInFile(const string& username, const string& newPassword, con
     if (rename("temp.txt", filename.c_str()) != 0) {
         perror("Error renaming temp file");
     }
+    if (remove(backupfilename.c_str()) != 0) {
+		perror("Error deleting original file");
+	}
+	if (rename("temp_backup.txt", backupfilename.c_str()) != 0) {
+		perror("Error renaming temp file");
+	}
 
 
 	return updated;
 }
+
+void showUserMenu(const string& username) {
+    cout << "\n===== USER MENU =====\n";
+    cout << "1. Xem thông tin cá nhân\n";
+    cout << "2. Đổi mật khẩu\n";
+    cout << "3. Thoát\n";
+    int choice;
+    cin >> choice;
+    cin.ignore();
+    if (choice == 1) {
+        ifstream file("users.txt");
+        string line;
+        while (getline(file, line)) {
+            stringstream ss(line);
+            string uname, fullname, phone, pw, wallet;
+            bool isManager, firstLogin;
+            getline(ss, uname, ',');
+            getline(ss, fullname, ',');
+            getline(ss, phone, ',');
+            getline(ss, pw, ',');
+            getline(ss, wallet, ',');
+            ss >> isManager;
+            ss.ignore();
+            ss >> firstLogin;
+            if (uname == username) {
+                cout << "\nUsername: " << uname
+                     << "\nFullname: " << fullname
+                     << "\nPhone: " << phone
+                     << "\nWallet ID: " << wallet
+                     << "\nRole: " << (isManager ? "Admin" : "User") << endl;
+                break;
+            }
+        }
+        file.close();
+    } else if (choice == 2) {
+        cout << "Nhập mật khẩu mới: ";
+        string newPass;
+        getline(cin, newPass);
+        updatePasswordInFile(username, fakehash(newPass), "users.txt", "users_backup.txt");
+        cout << "[✓] Mật khẩu đã được thay đổi.\n";
+    }
+}
+
+bool checkusername (const string& username) {
+    ifstream file("users.txt");
+        string line;
+        while (getline(file, line)) {
+            stringstream ss(line);
+            string uname, fullname, phone, pw, wallet;
+            bool isManager, firstLogin;
+            getline(ss, uname, ',');
+            getline(ss, fullname, ',');
+            getline(ss, phone, ',');
+            getline(ss, pw, ',');
+            getline(ss, wallet, ',');
+            ss >> isManager;
+            ss.ignore();
+            ss >> firstLogin;
+            if (uname == username) {
+                return true;
+            }
+        }
+
+        file.close();
+        return false;
+}
+
+void editUsername (const string& username) {
+    ifstream inFile("users.txt");
+    ofstream tempFile("temp.txt");
+    ofstream tempBackupFile("temp_backup.txt");
+    string line;
+    while (getline(inFile, line)) {
+        stringstream ss(line);
+        string uname, fullname, phone, pw, wallet;
+        bool isManager, firstLogin;
+        getline(ss, uname, ',');
+        getline(ss, fullname, ',');
+        getline(ss, phone, ',');
+        getline(ss, pw, ',');
+        getline(ss, wallet, ',');
+        ss >> isManager;
+        ss.ignore();
+        ss >> firstLogin;
+        if (uname == username) {
+            cout << "Doi thanh: ";
+            string temp;
+            cin >> temp;
+            uname = temp;
+            cout << "Username: " << temp << ", Fullname: " << fullname
+                << ", Phone: " << phone << ", Role: " << (isManager ? "Admin" : "User") << endl;
+        }
+        tempFile << uname << ',' << fullname << ',' << phone << ','
+            << pw << ',' << wallet << ',' << isManager << ',' << firstLogin << '\n';
+        tempBackupFile << uname << ',' << fullname << ',' << phone << ','
+            << pw << ',' << wallet << ',' << isManager << ',' << firstLogin << '\n';
+    }
+
+    inFile.close();
+    tempFile.close();
+    tempBackupFile.close();
+
+    if (remove("users.txt") != 0) {
+        perror("Error deleting original file");
+    }
+    if (rename("temp.txt", "users.txt") != 0) {
+        perror("Error renaming temp file");
+    }
+    if (remove("users_backup.txt") != 0) {
+        perror("Error deleting original file");
+    }
+    if (rename("temp_backup.txt", "users_backup.txt") != 0) {
+        perror("Error renaming temp file");
+    }
+}
+
+void showAdminMenu() {
+    cout << "\n===== ADMIN MENU =====\n";
+    cout << "1. Xem danh sách người dùng\n";
+    cout << "2. Tạo tài khoản mới\n";
+    cout << "3. Edit user\n";
+    cout << "4. Thoát\n";
+    int choice;
+    cin >> choice;
+    cin.ignore();
+    if (choice == 1) {
+        ifstream file("users.txt");
+        string line;
+        cout << "\n--- Danh sách người dùng ---\n";
+        while (getline(file, line)) {
+            stringstream ss(line);
+            string uname, fullname, phone, pw, wallet;
+            bool isManager, firstLogin;
+            getline(ss, uname, ',');
+            getline(ss, fullname, ',');
+            getline(ss, phone, ',');
+            getline(ss, pw, ',');
+            getline(ss, wallet, ',');
+            ss >> isManager;
+            ss.ignore();
+            ss >> firstLogin;
+            cout << "Username: " << uname << ", Fullname: " << fullname
+                 << ", Phone: " << phone << ", Role: " << (isManager ? "Admin" : "User") << endl;
+        }
+        file.close();
+    } else if (choice == 2) {
+        UserAccount user = createUserfrominput();
+        saveUsertofile(user, "users.txt");
+        cout << "[✓] Tạo tài khoản thành công.\n";
+    } else if (choice == 3) {
+        bool condition = true;
+        while (condition) {
+            cout << "Username: ";
+            string username;
+            cin >> username;
+            if (checkusername(username)) {
+                condition = false;
+                cout << "Thong tin muon thay doi cua user " << username << "\n";
+                cout << "1. Username\n2. Fullname\n3. Phonenumber\n4. Password\n";
+                int num;
+                cin >> num;
+                if (num == 1) {
+                    editUsername(username);
+                }
+            } else {
+                cout << "[!] User doesn't exist.\n";
+            }
+        }
+    }
+}
+
 bool loginAndHandleFirstLogin(const string& username, const string& password) {
 	ifstream inFile("users.txt");
 	string line;
@@ -230,23 +424,33 @@ bool loginAndHandleFirstLogin(const string& username, const string& password) {
 				string newPass;
 				getline(cin, newPass);
 				inFile.close();
-				updatePasswordInFile(username, fakehash(newPass), "users.txt");
+				updatePasswordInFile(username, fakehash(newPass), "users.txt", "users_backup.txt");
 				ifstream inFile("users.txt");
 				cout << "[✓] Complete change.\n";
 			}
 			else {
-				cout << "[✓] successful login.\n";
+				cout << "[✓] Successful login.\n";
+				if (isManager == 0) {
+				    inFile.close();
+                    showUserMenu(fullName);
+				} else {
+				    inFile.close();
+				    showAdminMenu();
+				}
 			}
 			return true;
 		}
 	}
+	inFile.close();
 	return false;
 }
+
+
 
 int main() {
     srand(time(0));
     int choice;
-    cout << "1. Register\n2. Sign Up\n Make choice: ";
+    cout << "1. Register\n2. Sign Up\nMake choice: ";
     cin >> choice;
     cin.ignore();
 
