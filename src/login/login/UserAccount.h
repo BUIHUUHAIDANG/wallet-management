@@ -14,7 +14,7 @@ private:
 	bool isManager;
 	bool firstlogin;
 public:
-	//constuctor co tham so ban dau->de khoi tao user .
+	//constuctor co tham so ban dau->de khoi tao user.
 	UserAccount(const string& uname, const string& name, const string& phone, bool manager = false);
 	//dat mat khau.
 	void setPassword(const string& pw);
@@ -27,7 +27,7 @@ public:
 	bool getisManager() const;
 	bool getFirstlogin() const;
 	void printInfo() const;
-	
+
 };
 string fakeHash(const string& input);
 string generateRandompassword(int length);
@@ -40,7 +40,7 @@ bool updatePhonenumberInFile(const string& username, const string& newPhonenumbe
 void showUserMenu(const string& username);
 bool checkusername(const string& username);
 void showAdminMenu();
-bool loginAndHandleFirstLogin(const string& username, const string& password );
+bool loginAndHandleFirstLogin(const string& username, const string& password);
 struct Transation
 {
 	string FromID;

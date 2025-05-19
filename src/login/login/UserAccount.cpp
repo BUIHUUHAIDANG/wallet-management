@@ -1,4 +1,4 @@
-﻿#include "UserAccount.h"
+﻿﻿#include "UserAccount.h"
 #include<iostream>
 #include <cstdlib>
 #include <fstream>
@@ -7,7 +7,7 @@
 
 
 
-UserAccount::UserAccount(const string& uname, const string& name, const string& phone, bool manager) {
+UserAccount::UserAccount(const string & uname, const string & name, const string & phone, bool manager) {
 	username = uname;
 	fullname = name;
 	phonenumber = phone;
@@ -25,10 +25,10 @@ void UserAccount::setFirstLogin(bool status) {
 string UserAccount::getUsername() const {
 	return username;
 }
-string UserAccount::getPasswordHash() const { 
+string UserAccount::getPasswordHash() const {
 	return passwordHash;
 }
-	
+
 string UserAccount::getFullname() const {
 	return fullname;
 }
@@ -50,7 +50,7 @@ void UserAccount::printInfo() const {
 	cout << "Phone Number: " << phonenumber << endl;
 	cout << "Wallet ID: " << WalletID << endl;
 	cout << "Is Manager: " << (isManager ? "Yes" : "No") << endl;
-	cout<< "First Login: " << (firstlogin ? "Yes" : "No") << endl;
+	cout << "First Login: " << (firstlogin ? "Yes" : "No") << endl;
 }
 string fakeHash(const string& input) {
 	string hashed;
@@ -134,7 +134,7 @@ void saveUsertofile(const UserAccount& user, const string& filename) {
 	backup << user.getUsername() << "," << user.getFullname() << "," << user.getPhonenumber() << "," << user.getPasswordHash() << "," << user.getWalletID() << "," << user.getisManager() << "," << user.getFirstlogin() << endl;
 	backup.close();
 }
-bool updatePasswordInFile(const string& username, const string& newPassword, const string& filename,const string& backupfilename) {
+bool updatePasswordInFile(const string& username, const string& newPassword, const string& filename, const string& backupfilename) {
 	ifstream inFile(filename);
 	ofstream tempFile("temp.txt");
 	ofstream tempBackupFile("temp_backup.txt");
@@ -321,7 +321,7 @@ void showUserMenu(const string& username) {
 					<< "\nRole: " << (isManager ? "Admin" : "User") << endl;
 				break;
 			}
-			
+
 		}
 		file.close();
 	}
@@ -359,7 +359,7 @@ bool checkusername(const string& username) {
 }
 
 void showAdminMenu() {
-	cout << "\n===== ADMIN MENU ===== \n";
+	cout << "\n===== ADMIN MENU =====\n";
 	cout << "1. View user list\n";
 	cout << "2. Create new account\n";
 	cout << "3. Edit user\n";
@@ -428,11 +428,11 @@ void showAdminMenu() {
 						updatePasswordInFile(username, newPassword, "users.txt", "users_backup.txt");
 					}
 
-					
+
 					char choice;
 					cout << "Do you want to edit more? (y/n): ";
 					cin >> choice;
-					cin.ignore(); 
+					cin.ignore();
 
 					if (choice != 'y' && choice != 'Y') {
 						editMore = false;
@@ -489,7 +489,7 @@ bool loginAndHandleFirstLogin(const string& username, const string& password) {
 	inFile.close();
 	return false;
 }
-Transation ::Transation(const string& From, const string& To, const int& Am, const bool& sta) {
+Transation::Transation(const string& From, const string& To, const int& Am, const bool& sta) {
 	FromID = From;
 	ToID = To;
 	Amount = Am;
@@ -499,12 +499,10 @@ Wallet::Wallet(const string& ID) {
 	WalletID = ID;
 	balance = 1000000;
 }
-string Wallet:: getID() const {
+string Wallet::getID() const {
 	return WalletID;
 }
 int Wallet::getBalance() const {
 	return balance;
 }
-
-
-
+}
