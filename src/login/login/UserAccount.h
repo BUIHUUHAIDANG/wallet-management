@@ -35,6 +35,8 @@ bool duplicateuname(const string& user);
 UserAccount createUserfrominput();
 void saveUsertofile(const UserAccount& user, const string& filename);
 bool updatePasswordInFile(const string& username, const string& newPassword, const string& filename, const string& backupfilename);
+bool updateFullnameInFile(const string& username, const string& newFullname, const string& filename, const string& backupfilename);
+bool updatePhonenumberInFile(const string& username, const string& newPhonenumber, const string& filename, const string& backupfilename);
 void showUserMenu(const string& username);
 bool checkusername(const string& username);
 void showAdminMenu();

@@ -187,6 +187,109 @@ bool updatePasswordInFile(const string& username, const string& newPassword, con
 
 	return updated;
 }
+bool updateFullnameInFile(const string& username, const string& newFullname, const string& filename, const string& backupfilename) {
+	ifstream inFile(filename);
+	ofstream tempFile("temp.txt");
+	ofstream tempBackupFile("temp_backup.txt");
+	string line;
+	bool updated = false;
+
+	while (getline(inFile, line)) {
+		stringstream ss(line);
+		string uname, fullName, phone, pw, wallet;
+		bool isManager, firstLogin;
+
+		getline(ss, uname, ',');
+		getline(ss, fullName, ',');
+		getline(ss, phone, ',');
+		getline(ss, pw, ',');
+		getline(ss, wallet, ',');
+		ss >> isManager;
+		ss.ignore();
+		ss >> firstLogin;
+
+		if (uname == username) {
+			fullName = newFullname;
+		}
+
+		tempFile << uname << ',' << fullName << ',' << phone << ','
+			<< pw << ',' << wallet << ',' << isManager << ',' << firstLogin << '\n';
+		tempBackupFile << uname << ',' << fullName << ',' << phone << ','
+			<< pw << ',' << wallet << ',' << isManager << ',' << firstLogin << '\n';
+	}
+
+	inFile.close();
+	tempFile.close();
+	tempBackupFile.close();
+
+	if (remove(filename.c_str()) != 0) {
+		perror("Error deleting original file");
+	}
+	if (rename("temp.txt", filename.c_str()) != 0) {
+		perror("Error renaming temp file");
+	}
+	if (remove(backupfilename.c_str()) != 0) {
+		perror("Error deleting original file");
+	}
+	if (rename("temp_backup.txt", backupfilename.c_str()) != 0) {
+		perror("Error renaming temp file");
+	}
+
+
+	return updated;
+}
+bool updatePhonenumberInFile(const string& username, const string& newPhonenumber, const string& filename, const string& backupfilename) {
+	ifstream inFile(filename);
+	ofstream tempFile("temp.txt");
+	ofstream tempBackupFile("temp_backup.txt");
+	string line;
+	bool updated = false;
+
+	while (getline(inFile, line)) {
+		stringstream ss(line);
+		string uname, fullName, phone, pw, wallet;
+		bool isManager, firstLogin;
+
+		getline(ss, uname, ',');
+		getline(ss, fullName, ',');
+		getline(ss, phone, ',');
+		getline(ss, pw, ',');
+		getline(ss, wallet, ',');
+		ss >> isManager;
+		ss.ignore();
+		ss >> firstLogin;
+
+		if (uname == username) {
+			phone = newPhonenumber;
+		}
+
+		tempFile << uname << ',' << fullName << ',' << phone << ','
+			<< pw << ',' << wallet << ',' << isManager << ',' << firstLogin << '\n';
+		tempBackupFile << uname << ',' << fullName << ',' << phone << ','
+			<< pw << ',' << wallet << ',' << isManager << ',' << firstLogin << '\n';
+	}
+
+	inFile.close();
+	tempFile.close();
+	tempBackupFile.close();
+
+	if (remove(filename.c_str()) != 0) {
+		perror("Error deleting original file");
+	}
+	if (rename("temp.txt", filename.c_str()) != 0) {
+		perror("Error renaming temp file");
+	}
+	if (remove(backupfilename.c_str()) != 0) {
+		perror("Error deleting original file");
+	}
+	if (rename("temp_backup.txt", backupfilename.c_str()) != 0) {
+		perror("Error renaming temp file");
+	}
+
+
+	return updated;
+}
+
 void showUserMenu(const string& username) {
 	cout << "\n===== USER MENU =====\n";
 	cout << "1. View personal information\n";
@@ -298,13 +401,43 @@ void showAdminMenu() {
 			cin >> username;
 			if (checkusername(username)) {
 				condition = false;
-				cout << "The information you want to change is " << username << "\n";
-				cout << "1. Fullname\n2. Phonenumber\n3. Password\n";
-				int num;
-				cin >> num;
-			}
-			else {
-				cout << "[!] User doesn't exist.\n";
+				bool editMore = true;
+				while (editMore) {
+					cout << "The information you want to change is " << username << "\n";
+					cout << "1. Fullname\n2. Phonenumber\n3. Password\n";
+					int num;
+					cin >> num;
+					cin.ignore();
+
+					if (num == 1) {
+						string newFullname;
+						cout << "Enter new fullname: ";
+						getline(cin, newFullname);
+						updateFullnameInFile(username, newFullname, "users.txt", "users_backup.txt");
+					}
+					else if (num == 2) {
+						string newPhonenumber;
+						cout << "Enter new phone number: ";
+						getline(cin, newPhonenumber);
+						updatePhonenumberInFile(username, newPhonenumber, "users.txt", "users_backup.txt");
+					}
+					else if (num == 3) {
+						string newPassword;
+						cout << "Enter new password: ";
+						getline(cin, newPassword);
+						updatePasswordInFile(username, newPassword, "users.txt", "users_backup.txt");
+					}
+
+					
+					char choice;
+					cout << "Do you want to edit more? (y/n): ";
+					cin >> choice;
+					cin.ignore(); 
+
+					if (choice != 'y' && choice != 'Y') {
+						editMore = false;
+					}
+				}
 			}
 		}
 	}
