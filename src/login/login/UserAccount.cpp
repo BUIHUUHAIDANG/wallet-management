@@ -425,7 +425,7 @@ void showAdminMenu() {
 						string newPassword;
 						cout << "Enter new password: ";
 						getline(cin, newPassword);
-						updatePasswordInFile(username, newPassword, "users.txt", "users_backup.txt");
+						updatePasswordInFile(username, fakeHash(newPassword), "users.txt", "users_backup.txt");
 					}
 
 
