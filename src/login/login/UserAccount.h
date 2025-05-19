@@ -1,7 +1,7 @@
 #ifndef USER_ACCOUNT_H
 #define USER_ACCOUNT_H
 
-
+#include<vector>
 #include <string>
 using namespace std;
 class UserAccount {
@@ -39,4 +39,22 @@ void showUserMenu(const string& username);
 bool checkusername(const string& username);
 void showAdminMenu();
 bool loginAndHandleFirstLogin(const string& username, const string& password);
+struct Transation
+{
+	string FromID;
+	string ToID;
+	int Amount;
+	bool status;
+	Transation(const string& From, const string& To, const int& Am, const bool& sta);
+};
+class Wallet {
+private:
+	string WalletID;
+	int balance;
+	vector<Transation>history;
+public:
+	Wallet(const string& ID);
+	string getID() const;
+	int getBalance() const;
+};
 #endif
