@@ -59,4 +59,8 @@ public:
 	string getID() const;
 	int getBalance() const;
 };
+<<<<<<< HEAD
 #endif
+=======
+#endif
+>>>>>>> c3ec9aa8c2035839e1ed52b654d1db8cb3ff267f

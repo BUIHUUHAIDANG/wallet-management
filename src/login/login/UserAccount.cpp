@@ -505,4 +505,11 @@ string Wallet::getID() const {
 int Wallet::getBalance() const {
 	return balance;
 }
+<<<<<<< HEAD
 }
+=======
+}
+
+
+
+>>>>>>> c3ec9aa8c2035839e1ed52b654d1db8cb3ff267f
