@@ -257,17 +257,17 @@ bool checkusername(const string& username) {
 
 void showAdminMenu() {
 	cout << "\n===== ADMIN MENU =====\n";
-	cout << "1. Xem danh sách người dùng\n";
-	cout << "2. Tạo tài khoản mới\n";
+	cout << "1. View user list\n";
+	cout << "2. Create new account\n";
 	cout << "3. Edit user\n";
-	cout << "4. Thoát\n";
+	cout << "4. Exit\n";
 	int choice;
 	cin >> choice;
 	cin.ignore();
 	if (choice == 1) {
 		ifstream file("users.txt");
 		string line;
-		cout << "\n--- Danh sách người dùng ---\n";
+		cout << "\n--- user list ---\n";
 		while (getline(file, line)) {
 			stringstream ss(line);
 			string uname, fullname, phone, pw, wallet;
@@ -288,7 +288,7 @@ void showAdminMenu() {
 	else if (choice == 2) {
 		UserAccount user = createUserfrominput();
 		saveUsertofile(user, "users.txt");
-		cout << "[✓] Tạo tài khoản thành công.\n";
+		cout << "[✓] Account created successfully\n";
 	}
 	else if (choice == 3) {
 		bool condition = true;
@@ -298,7 +298,7 @@ void showAdminMenu() {
 			cin >> username;
 			if (checkusername(username)) {
 				condition = false;
-				cout << "Thong tin muon thay doi cua user " << username << "\n";
+				cout << "The information you want to change is " << username << "\n";
 				cout << "1. Fullname\n2. Phonenumber\n3. Password\n";
 				int num;
 				cin >> num;
