@@ -391,7 +391,7 @@ void showAdminMenu() {
 	else if (choice == 2) {
 		UserAccount user = createUserfrominput();
 		saveUsertofile(user, "users.txt");
-		cout << "[✓] Account created successfully\n";
+		cout << "[✓] Account created successfully \n";
 	}
 	else if (choice == 3) {
 		bool condition = true;

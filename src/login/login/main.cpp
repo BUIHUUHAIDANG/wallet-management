@@ -5,7 +5,7 @@
 int main() {
     srand(time(0));
     int choice;
-    cout << "1. Register\n2. Sign Up\nMake choice: ";
+    cout << "1. Register\n2. Sign Up\nMake choice:  ";
     cin >> choice;
     cin.ignore();
 
