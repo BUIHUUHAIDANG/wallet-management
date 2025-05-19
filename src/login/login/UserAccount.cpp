@@ -189,9 +189,9 @@ bool updatePasswordInFile(const string& username, const string& newPassword, con
 }
 void showUserMenu(const string& username) {
 	cout << "\n===== USER MENU =====\n";
-	cout << "1. Xem thông tin cá nhân\n";
-	cout << "2. Đổi mật khẩu\n";
-	cout << "3. Thoát\n";
+	cout << "1. View personal information\n";
+	cout << "2. Change password\n";
+	cout << "3. Exit\n";
 	int choice;
 	cin >> choice;
 	cin.ignore();
@@ -218,15 +218,16 @@ void showUserMenu(const string& username) {
 					<< "\nRole: " << (isManager ? "Admin" : "User") << endl;
 				break;
 			}
+			
 		}
 		file.close();
 	}
 	else if (choice == 2) {
-		cout << "Nhập mật khẩu mới: ";
+		cout << "New password: ";
 		string newPass;
 		getline(cin, newPass);
 		updatePasswordInFile(username, fakehash(newPass), "users.txt", "users_backup.txt");
-		cout << "[✓] Mật khẩu đã được thay đổi.\n";
+		cout << "[✓] Password changed successfully.\n";
 	}
 }
 
@@ -342,7 +343,7 @@ bool loginAndHandleFirstLogin(const string& username, const string& password) {
 				cout << "[✓] Successful login.\n";
 				if (isManager == 0) {
 					inFile.close();
-					showUserMenu(fullName);
+					showUserMenu(uname);
 				}
 				else {
 					inFile.close();
