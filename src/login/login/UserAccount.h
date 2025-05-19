@@ -40,7 +40,7 @@ bool updatePhonenumberInFile(const string& username, const string& newPhonenumbe
 void showUserMenu(const string& username);
 bool checkusername(const string& username);
 void showAdminMenu();
-bool loginAndHandleFirstLogin(const string& username, const string& password);
+bool loginAndHandleFirstLogin(const string& username, const string& password );
 struct Transation
 {
 	string FromID;
