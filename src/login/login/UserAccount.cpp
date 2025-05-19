@@ -187,6 +187,128 @@ bool updatePasswordInFile(const string& username, const string& newPassword, con
 
 	return updated;
 }
+void showUserMenu(const string& username) {
+	cout << "\n===== USER MENU =====\n";
+	cout << "1. Xem thông tin cá nhân\n";
+	cout << "2. Đổi mật khẩu\n";
+	cout << "3. Thoát\n";
+	int choice;
+	cin >> choice;
+	cin.ignore();
+	if (choice == 1) {
+		ifstream file("users.txt");
+		string line;
+		while (getline(file, line)) {
+			stringstream ss(line);
+			string uname, fullname, phone, pw, wallet;
+			bool isManager, firstLogin;
+			getline(ss, uname, ',');
+			getline(ss, fullname, ',');
+			getline(ss, phone, ',');
+			getline(ss, pw, ',');
+			getline(ss, wallet, ',');
+			ss >> isManager;
+			ss.ignore();
+			ss >> firstLogin;
+			if (uname == username) {
+				cout << "\nUsername: " << uname
+					<< "\nFullname: " << fullname
+					<< "\nPhone: " << phone
+					<< "\nWallet ID: " << wallet
+					<< "\nRole: " << (isManager ? "Admin" : "User") << endl;
+				break;
+			}
+		}
+		file.close();
+	}
+	else if (choice == 2) {
+		cout << "Nhập mật khẩu mới: ";
+		string newPass;
+		getline(cin, newPass);
+		updatePasswordInFile(username, fakehash(newPass), "users.txt", "users_backup.txt");
+		cout << "[✓] Mật khẩu đã được thay đổi.\n";
+	}
+}
+
+bool checkusername(const string& username) {
+	ifstream file("users.txt");
+	string line;
+	while (getline(file, line)) {
+		stringstream ss(line);
+		string uname, fullname, phone, pw, wallet;
+		bool isManager, firstLogin;
+		getline(ss, uname, ',');
+		getline(ss, fullname, ',');
+		getline(ss, phone, ',');
+		getline(ss, pw, ',');
+		getline(ss, wallet, ',');
+		ss >> isManager;
+		ss.ignore();
+		ss >> firstLogin;
+		if (uname == username) {
+			return true;
+		}
+	}
+
+	file.close();
+	return false;
+}
+
+void showAdminMenu() {
+	cout << "\n===== ADMIN MENU =====\n";
+	cout << "1. Xem danh sách người dùng\n";
+	cout << "2. Tạo tài khoản mới\n";
+	cout << "3. Edit user\n";
+	cout << "4. Thoát\n";
+	int choice;
+	cin >> choice;
+	cin.ignore();
+	if (choice == 1) {
+		ifstream file("users.txt");
+		string line;
+		cout << "\n--- Danh sách người dùng ---\n";
+		while (getline(file, line)) {
+			stringstream ss(line);
+			string uname, fullname, phone, pw, wallet;
+			bool isManager, firstLogin;
+			getline(ss, uname, ',');
+			getline(ss, fullname, ',');
+			getline(ss, phone, ',');
+			getline(ss, pw, ',');
+			getline(ss, wallet, ',');
+			ss >> isManager;
+			ss.ignore();
+			ss >> firstLogin;
+			cout << "Username: " << uname << ", Fullname: " << fullname
+				<< ", Phone: " << phone << ", Role: " << (isManager ? "Admin" : "User") << endl;
+		}
+		file.close();
+	}
+	else if (choice == 2) {
+		UserAccount user = createUserfrominput();
+		saveUsertofile(user, "users.txt");
+		cout << "[✓] Tạo tài khoản thành công.\n";
+	}
+	else if (choice == 3) {
+		bool condition = true;
+		while (condition) {
+			cout << "Username: ";
+			string username;
+			cin >> username;
+			if (checkusername(username)) {
+				condition = false;
+				cout << "Thong tin muon thay doi cua user " << username << "\n";
+				cout << "1. Fullname\n2. Phonenumber\n3. Password\n";
+				int num;
+				cin >> num;
+			}
+			else {
+				cout << "[!] User doesn't exist.\n";
+			}
+		}
+	}
+}
+
 bool loginAndHandleFirstLogin(const string& username, const string& password) {
 	ifstream inFile("users.txt");
 	string line;
@@ -212,12 +334,20 @@ bool loginAndHandleFirstLogin(const string& username, const string& password) {
 				string newPass;
 				getline(cin, newPass);
 				inFile.close();
-				updatePasswordInFile(username, fakehash(newPass), "users.txt","users_backup.txt");
+				updatePasswordInFile(username, fakehash(newPass), "users.txt", "users_backup.txt");
 				ifstream inFile("users.txt");
 				cout << "[✓] Complete change.\n";
 			}
 			else {
-				cout << "[✓] successful login.\n";
+				cout << "[✓] Successful login.\n";
+				if (isManager == 0) {
+					inFile.close();
+					showUserMenu(fullName);
+				}
+				else {
+					inFile.close();
+					showAdminMenu();
+				}
 			}
 			return true;
 		}

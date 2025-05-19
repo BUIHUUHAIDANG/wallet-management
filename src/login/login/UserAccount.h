@@ -34,6 +34,9 @@ string generateRandompassword(int length);
 bool duplicateuname(const string& user);
 UserAccount createUserfrominput();
 void saveUsertofile(const UserAccount& user, const string& filename);
-bool updatePasswordInFile(const string& username, const string& newPassword, const string& filename);
+bool updatePasswordInFile(const string& username, const string& newPassword, const string& filename, const string& backupfilename);
+void showUserMenu(const string& username);
+bool checkusername(const string& username);
+void showAdminMenu();
 bool loginAndHandleFirstLogin(const string& username, const string& password);
 #endif
