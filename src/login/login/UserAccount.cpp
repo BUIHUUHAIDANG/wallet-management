@@ -19,7 +19,7 @@ void UserAccount::setPassword(const string& pw) {
 	passwordHash = pw;
 
 }
-void UserAccount::setFirstlogin(bool status) {
+void UserAccount::setFirstLogin(bool status) {
 	firstlogin = status;
 }
 string UserAccount::getUsername() const {
@@ -52,7 +52,7 @@ void UserAccount::printInfo() const {
 	cout << "Is Manager: " << (isManager ? "Yes" : "No") << endl;
 	cout<< "First Login: " << (firstlogin ? "Yes" : "No") << endl;
 }
-string fakehash(const string& input) {
+string fakeHash(const string& input) {
 	string hashed;
 	for (char c : input) {
 		hashed += (c + 3);
@@ -123,7 +123,7 @@ UserAccount createUserfrominput() {
 	}
 
 	UserAccount user(uname, name, phone, isManager);
-	user.setPassword(fakehash(password));
+	user.setPassword(fakeHash(password));
 	return user;
 }
 void saveUsertofile(const UserAccount& user, const string& filename) {
@@ -329,7 +329,7 @@ void showUserMenu(const string& username) {
 		cout << "New password: ";
 		string newPass;
 		getline(cin, newPass);
-		updatePasswordInFile(username, fakehash(newPass), "users.txt", "users_backup.txt");
+		updatePasswordInFile(username, fakeHash(newPass), "users.txt", "users_backup.txt");
 		cout << "[✓] Password changed successfully.\n";
 	}
 }
@@ -446,7 +446,7 @@ void showAdminMenu() {
 bool loginAndHandleFirstLogin(const string& username, const string& password) {
 	ifstream inFile("users.txt");
 	string line;
-	string hashedPassword = fakehash(password);
+	string hashedPassword = fakeHash(password);
 
 	while (getline(inFile, line)) {
 		stringstream ss(line);
@@ -468,7 +468,7 @@ bool loginAndHandleFirstLogin(const string& username, const string& password) {
 				string newPass;
 				getline(cin, newPass);
 				inFile.close();
-				updatePasswordInFile(username, fakehash(newPass), "users.txt", "users_backup.txt");
+				updatePasswordInFile(username, fakeHash(newPass), "users.txt", "users_backup.txt");
 				ifstream inFile("users.txt");
 				cout << "[✓] Complete change.\n";
 			}

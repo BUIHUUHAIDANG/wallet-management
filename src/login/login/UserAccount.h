@@ -18,7 +18,7 @@ public:
 	UserAccount(const string& uname, const string& name, const string& phone, bool manager = false);
 	//dat mat khau.
 	void setPassword(const string& pw);
-	void setFirstlogin(bool status);
+	void setFirstLogin(bool status);
 	string getPasswordHash() const;
 	string getUsername() const;
 	string getFullname() const;
@@ -29,7 +29,7 @@ public:
 	void printInfo() const;
 	
 };
-string fakehash(const string& input);
+string fakeHash(const string& input);
 string generateRandompassword(int length);
 bool duplicateuname(const string& user);
 UserAccount createUserfrominput();
