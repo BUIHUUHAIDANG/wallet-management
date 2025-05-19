@@ -359,7 +359,7 @@ bool checkusername(const string& username) {
 }
 
 void showAdminMenu() {
-	cout << "\n===== ADMIN MENU =====\n";
+	cout << "\n===== ADMIN MENU ===== \n";
 	cout << "1. View user list\n";
 	cout << "2. Create new account\n";
 	cout << "3. Edit user\n";
