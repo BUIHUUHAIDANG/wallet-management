@@ -3,6 +3,9 @@
 
 #include<vector>
 #include <string>
+#include<map>
+#include <ctime>
+
 using namespace std;
 class UserAccount {
 private:
@@ -37,6 +40,12 @@ void saveUsertofile(const UserAccount& user, const string& filename);
 bool updatePasswordInFile(const string& username, const string& newPassword, const string& filename, const string& backupfilename);
 bool updateFullnameInFile(const string& username, const string& newFullname, const string& filename, const string& backupfilename);
 bool updatePhonenumberInFile(const string& username, const string& newPhonenumber, const string& filename, const string& backupfilename);
+extern map<string, pair<string, time_t>> otpStore;
+string generateOTP(int size);
+int getTTL();
+void sendOTP(const string& username, int ttl);
+bool checkOTP(const string& username, const string& input, int ttl);
+void requestInfoChange(const string& username);
 void showUserMenu(const string& username);
 bool checkusername(const string& username);
 void showAdminMenu();
@@ -59,8 +68,5 @@ public:
 	string getID() const;
 	int getBalance() const;
 };
-<<<<<<< HEAD
+
 #endif
-=======
-#endif
->>>>>>> c3ec9aa8c2035839e1ed52b654d1db8cb3ff267f

@@ -1,8 +1,9 @@
-﻿﻿#include "UserAccount.h"
+﻿#include "UserAccount.h"
 #include<iostream>
 #include <cstdlib>
 #include <fstream>
 #include <sstream>
+#include <map>
 
 
 
@@ -289,12 +290,79 @@ bool updatePhonenumberInFile(const string& username, const string& newPhonenumbe
 
 	return updated;
 }
+map<string, pair<string, time_t>> otpStore;
+string generateOTP(int size = 6) {
+	static bool seeded = false;// Chỉ tạo duy nhất một lần khi function bắt đấuf (tránh bị trùng otp)
+	if (!seeded) {
+		srand(static_cast<unsigned>(time(nullptr)));
+		seeded = true;
+	}
 
-void showUserMenu(const string& username) {
-	cout << "\n===== USER MENU =====\n";
+	const string digits = "0123456789";
+	string result;
+	result.reserve(size);// lưu vào file map
+
+	for (int i = 0; i < size; ++i)
+		result += digits[rand() % digits.size()];
+
+	return result;
+}
+
+// Hàm trả về giá trị TTL
+int getTTL() {
+	return 180; // Giá trị TTL là 180 giây( thấy dư có thể delete )
+}
+
+// Hàm gửi OTP
+void sendOTP(const string& username, int ttl = 180) {
+	string otp = generateOTP();
+	otpStore[username] = { otp, time(nullptr) };//*** 
+	cout << "Your OTP is: " << otp << " (Time limit: " << ttl << " seconds)" << endl;
+}
+
+// Hàm kiểm tra OTP
+bool checkOTP(const string& username, const string& input, int ttl = 180) {
+	auto it = otpStore.find(username);
+	if (it == otpStore.end()) return false;
+
+	const auto& entry = it->second;
+	double timeElapsed = difftime(time(nullptr), entry.second);
+	bool isExpired = timeElapsed > ttl;
+	bool isValid = !isExpired && entry.first == input;
+	cout << "Time elapsed: " << timeElapsed << " seconds, Expired: " << (isExpired ? "Yes" : "No") << endl;
+	return isValid;
+}
+void requestInfoChange(const string& username) {         //                                                         -FUNCTION TO REQUEST CHANGE OF INFO-
+	cout << "[!] Verify with OTP.\n";
+	sendOTP(username);
+
+	cout << "OTP sent. ";
+	string inputOtp;
+	getline(cin, inputOtp);
+
+	if (!checkOTP(username, inputOtp)) {
+		cout << "[X] Invalid OTP.\n";
+		return;
+	}
+
+	string newName, newPhone;
+	cout << "New name:";
+	getline(cin, newName);
+	cout << "New phone number: ";
+	getline(cin, newPhone);
+
+	ofstream reqFile("requests.txt", ios::app);
+	reqFile << username << "," << newName << "," << newPhone << "\n";
+	reqFile.close();
+	cout << "[✓] Request has been sent to admin.\n";
+}
+
+void showUserMenu(const string& username) { //                                                                            ~~ USER PANEL ~~
+	cout << "\n-=====- USER MENU -=====-\n";
 	cout << "1. View personal information\n";
 	cout << "2. Change password\n";
-	cout << "3. Exit\n";
+	cout << "3. Request to change inforamtion\n";
+	cout << "4. Exit\n";
 	int choice;
 	cin >> choice;
 	cin.ignore();
@@ -314,23 +382,28 @@ void showUserMenu(const string& username) {
 			ss.ignore();
 			ss >> firstLogin;
 			if (uname == username) {
-				cout << "\nUsername: " << uname
-					<< "\nFullname: " << fullname
-					<< "\nPhone: " << phone
-					<< "\nWallet ID: " << wallet
-					<< "\nRole: " << (isManager ? "Admin" : "User") << endl;
+				cout << "\nUsername: " << uname;
+				cout << "\nFullname: " << fullname;
+				cout << "\nPhone: " << phone;
+				cout << "\nWallet ID: " << wallet;
+				cout << "\nRole: " << (isManager ? "Admin" : "User") << endl;
 				break;
 			}
-
 		}
 		file.close();
 	}
 	else if (choice == 2) {
-		cout << "New password: ";
+		cout << "Enter the new passowrd: ";
 		string newPass;
 		getline(cin, newPass);
 		updatePasswordInFile(username, fakeHash(newPass), "users.txt", "users_backup.txt");
-		cout << "[✓] Password changed successfully.\n";
+		cout << "[✓] Password changed.\n";
+	}
+	else if (choice == 3) {
+		requestInfoChange(username);
+	}
+	else if (choice == 4) {
+		return;
 	}
 }
 
@@ -359,87 +432,94 @@ bool checkusername(const string& username) {
 }
 
 void showAdminMenu() {
-	cout << "\n===== ADMIN MENU =====\n";
+	int choice;
+	cout << "\n-=====- ADMIN MENU -=====-\n";
 	cout << "1. View user list\n";
 	cout << "2. Create new account\n";
-	cout << "3. Edit user\n";
+	cout << "3. Approve information change requests\n";
 	cout << "4. Exit\n";
-	int choice;
+	cout << "Enter your choice: ";
 	cin >> choice;
 	cin.ignore();
+
 	if (choice == 1) {
 		ifstream file("users.txt");
-		string line;
-		cout << "\n--- user list ---\n";
-		while (getline(file, line)) {
-			stringstream ss(line);
-			string uname, fullname, phone, pw, wallet;
-			bool isManager, firstLogin;
-			getline(ss, uname, ',');
-			getline(ss, fullname, ',');
-			getline(ss, phone, ',');
-			getline(ss, pw, ',');
-			getline(ss, wallet, ',');
-			ss >> isManager;
-			ss.ignore();
-			ss >> firstLogin;
-			cout << "Username: " << uname << ", Fullname: " << fullname
-				<< ", Phone: " << phone << ", Role: " << (isManager ? "Admin" : "User") << endl;
+		if (!file) {
+			cout << "[x] Failed to open users.txt\n";
 		}
-		file.close();
+		else {
+			string line;
+			cout << "\n--- User List ---\n";
+			while (getline(file, line)) {
+				stringstream ss(line);
+				string uname, fullname, phone, pw, wallet;
+				bool isManager, firstLogin;
+				getline(ss, uname, ',');
+				getline(ss, fullname, ',');
+				getline(ss, phone, ',');
+				getline(ss, pw, ',');
+				getline(ss, wallet, ',');
+				ss >> isManager;
+				ss.ignore();
+				ss >> firstLogin;
+				cout << "Username: " << uname
+					<< ", Fullname: " << fullname
+					<< ", Phone: " << phone
+					<< ", Role: " << (isManager ? "Admin" : "User") << endl;
+			}
+			file.close();
+		}
+
 	}
 	else if (choice == 2) {
 		UserAccount user = createUserfrominput();
 		saveUsertofile(user, "users.txt");
-		cout << "[✓] Account created successfully \n";
+		cout << "[✓] Account created successfully.\n";
+
 	}
 	else if (choice == 3) {
-		bool condition = true;
-		while (condition) {
-			cout << "Username: ";
-			string username;
-			cin >> username;
-			if (checkusername(username)) {
-				condition = false;
-				bool editMore = true;
-				while (editMore) {
-					cout << "The information you want to change is " << username << "\n";
-					cout << "1. Fullname\n2. Phonenumber\n3. Password\n";
-					int num;
-					cin >> num;
-					cin.ignore();
+		ifstream reqFile("requests.txt");
+		if (!reqFile) {
+			cout << "[x] Failed to open requests.txt\n";
+		}
+		else {
+			vector<string> remainingRequests;
+			string line;
 
-					if (num == 1) {
-						string newFullname;
-						cout << "Enter new fullname: ";
-						getline(cin, newFullname);
-						updateFullnameInFile(username, newFullname, "users.txt", "users_backup.txt");
-					}
-					else if (num == 2) {
-						string newPhonenumber;
-						cout << "Enter new phone number: ";
-						getline(cin, newPhonenumber);
-						updatePhonenumberInFile(username, newPhonenumber, "users.txt", "users_backup.txt");
-					}
-					else if (num == 3) {
-						string newPassword;
-						cout << "Enter new password: ";
-						getline(cin, newPassword);
-						updatePasswordInFile(username, fakeHash(newPassword), "users.txt", "users_backup.txt");
-					}
+			while (getline(reqFile, line)) {
+				stringstream ss(line);
+				string uname, newName, newPhone;
+				getline(ss, uname, ',');
+				getline(ss, newName, ',');
+				getline(ss, newPhone, ',');
 
+				cout << "\n[!] Request from: " << uname;
+				cout << "\nNew Name: " << newName;
+				cout << "\nNew Phone number: " << newPhone << endl;
 
-					char choice;
-					cout << "Do you want to edit more? (y/n): ";
-					cin >> choice;
-					cin.ignore();
+				cout << "Approve this change? (y/n): ";
+				char approve;
+				cin >> approve;
+				cin.ignore();
 
-					if (choice != 'y' && choice != 'Y') {
-						editMore = false;
-					}
+				if (approve == 'y' || approve == 'Y') {
+					updateFullnameInFile(uname, newName, "users.txt", "users_backup.txt");
+					cout << "[✓] User information updated successfully.\n";
+				}
+				else {
+					remainingRequests.push_back(line);
 				}
 			}
+			reqFile.close();
+
+			ofstream outFile("requests.txt");
+			for (const string& req : remainingRequests)
+				outFile << req << "\n";
+			outFile.close();
 		}
+	}
+	else if (choice == 4) {
+		return;
 	}
 }
 
@@ -505,11 +585,3 @@ string Wallet::getID() const {
 int Wallet::getBalance() const {
 	return balance;
 }
-<<<<<<< HEAD
-}
-=======
-}
-
-
-
->>>>>>> c3ec9aa8c2035839e1ed52b654d1db8cb3ff267f
