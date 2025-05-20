@@ -504,6 +504,7 @@ void showAdminMenu() {
 
 				if (approve == 'y' || approve == 'Y') {
 					updateFullnameInFile(uname, newName, "users.txt", "users_backup.txt");
+					updatePhonenumberInFile(uname, newPhone, "users.txt", "users_backup.txt");
 					cout << "[✓] User information updated successfully.\n";
 				}
 				else {
