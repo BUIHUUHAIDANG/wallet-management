@@ -133,78 +133,85 @@ private:
     string transaction;     // Ví dụ: A to B
     int amount;             // Số lượng chuyển
     int remainder;          // Số dư còn lại
-
-	void rollback(int temp_remainder) {
-        remainder = temp_remainder;
-        cout << "[Rollback] Khoi phuc so du ve: " << remainder << endl;
-    }
-
 public:
     // Constructor
-    Wallet(const string& wid) {
-    	wallet_id = wid;
-    	transaction = "";
-    	remainder = 0;	
+    Wallet(const string& wid, const int& rmd, const string& tst);
+	string getwalletid() const;
+	int getremainder() const;
+	string gettransaction() const;
+	void display() const;
+};
+
+Wallet::Wallet(const string& wid /*wallet_id*/, const int& rmd /*remainder*/, const string& tst /*transaction*/) {
+	wallet_id = wid;
+	remainder = rmd;
+	transaction = tst;
+}
+
+string Wallet::getwalletid () const {
+	return wallet_id;
+} 
+int Wallet::getremainder () const {
+	return remainder;
+}
+string Wallet::gettransaction () const {
+	return transaction;
+}
+void Wallet::display () const {
+	cout << "\n=== WALLET ===" << endl;
+    cout << "Wallet ID       : " << wallet_id << endl;
+	cout << "Remainder       : " << remainder << endl;
+    cout << "Transaction	: " << (transaction.empty() ? "Empty" : transaction) << endl;
+}
+
+void receipt (const string& rcp, const int& amt) {
+	
+}
+
+void transfer(const string& depositor, const string& rcp, const int& amt) {
+	ifstream file("wallet_id_" + depositor + ".txt");
+	string wid_line, remainder_line, transaction_line;
+	getline(file, wid_line);
+	getline(file, remainder_line);
+	getline(file, transaction_line);
+
+	file.close();
+
+	string wid;
+	stringstream ss1(wid_line);
+	string tmp1;
+	ss1 >> tmp1 >> tmp1 >> wid;
+
+	int remainder = 0;
+    stringstream ss2(remainder_line);
+    string tmp2;
+    ss2 >> tmp2 >> tmp2 >> remainder;
+
+	string transaction;
+	stringstream ss3(transaction_line);
+	string tmp3;
+	ss3 >> tmp3 >> tmp3 >> transaction;
+
+	if (amt <= 0) {
+		cout << "[!] Invalid amount" << endl;
+		return;
 	}
 
-	void IntermediaryTransactions(const string& ) {
+	int temp = remainder;
 
-	} 
+	// Atomicity + Consistency
+	if (amt > remainder) {
+		cout << "[!] Your transaction was declined due to insufficient funds." << endl;
+		return;
+	} else {
+		remainder -= amt;
+		transaction += "\nTransfer to " + rcp + " amount " + to_string(amt);
+		// Durability
+		ofstream tempfile("temp.txt");
+		tempfile << "Wallet ID       : " << depositor << endl << "Remainder       : " << remainder << endl << "Transaction	: " << transaction << endl;
+	}
 
-	// Ghi vào file (Durability)
-    void saveToFile() const {
-        string filename = "Wallet_id_" + wallet_id + ".txt";
-        ofstream fout(filename);
-        if (!fout) {
-            cerr << "[Error] Khong the mo file " << filename << endl;
-            return;
-        }
-
-        fout << "Wallet ID       : " << wallet_id << endl;
-        fout << "Last Transaction: " << transaction << endl;
-        fout << "Remainder       : " << remainder << endl;
-
-        fout.close();
-    }
-
-    // Giao dịch chuyển tiền (Full ACID)
-    void setTransaction(const string& rcp, int amt) {
-        if (amt <= 0) {
-            cout << "[!] Invalid amount" << endl;
-            return;
-        }
-
-        int temp = remainder;
-
-        // Atomicity + Consistency
-        if (amt > remainder) {
-            cout << "[!] Your transaction was declined due to insufficient funds." << endl;
-            return;
-        }
-
-        // Xử lý tạm
-        remainder -= amt;
-        amount = amt;
-        transaction = rcp;
-
-        // Giả lập lỗi bất ngờ
-        // if (amt == 999) rollback(temp); return; // test rollback
-
-        // Durability
-        saveToFile();
-
-        cout << "Giao dich thanh cong: " << transaction << " voi so tien " << amount << endl;
-        cout << "So du con lai: " << remainder << endl;
-    }
-
-    // Hiển thị thông tin ví
-    void display() const {
-        cout << "\n=== WALLET ===" << endl;
-        cout << "Wallet ID       : " << wallet_id << endl;
-		cout << "Remainder       : " << remainder << endl;
-        cout << "Transaction	: " << (transaction.empty() ? "Empty" : transaction) << endl;
-    }
-};
+}
 
 string fakehash(const string& input) {
 	string hashed;
@@ -251,7 +258,16 @@ bool duplicateuname(const string& user) {
     return false;
 }
 
+Wallet createwallet(const string& uname) {
+	string wid;
+	string tst = "";
+	int rmd = 0;
 
+	wid = uname;
+
+	Wallet mywallet(wid, rmd, tst);
+	return mywallet;
+}
 
 UserAccount createUserfrominput() {
 	string uname, name, phone, password;
@@ -284,6 +300,12 @@ UserAccount createUserfrominput() {
 	UserAccount user(uname, name, phone, isManager);
 	user.setPassword(fakehash(password));
 	return user;
+}
+
+void savewallettofile (const Wallet& mywallet, const string& filename) {
+	ofstream file(filename, ios::app);
+	file << "Wallet ID       : " << mywallet.getwalletid() << endl << "Remainder       : " << mywallet.getremainder() << endl << "Transaction	: " << mywallet.gettransaction() << endl;
+	file.close();
 }
 
 void saveUsertofile(const UserAccount& user, const string& filename) {
@@ -449,6 +471,9 @@ bool updatePhonenumberInFile(const string& username, const string& newPhonenumbe
 
 	return updated;
 }
+
+
+
 bool checkusername (const string& username) {
     ifstream file("users.txt");
         string line;
@@ -589,7 +614,31 @@ void showUserMenu(const string& username) { //                                  
     } else if (choice == 3) {
         requestInfoChange(username);
     } else if (choice == 4) {
-		Wallet myWallet(username);
+		ifstream file("Wallet_id_" + username + ".txt");
+
+		string wid_line, remainder_line, transaction_line;
+		getline(file, wid_line);
+		getline(file, remainder_line);
+		getline(file, transaction_line);
+
+		file.close();
+
+		string wid;
+		stringstream ss1(wid_line);
+		string tmp1;
+		ss1 >> tmp1 >> tmp1 >> wid;
+
+		int remainder = 0;
+        stringstream ss2(remainder_line);
+        string tmp2;
+        ss2 >> tmp2 >> tmp2 >> remainder;
+
+		string transaction;
+		stringstream ss3(transaction_line);
+		string tmp3;
+		ss3 >> tmp3 >> tmp3 >> transaction;
+
+		Wallet mywallet(wid, remainder, transaction);
 
 		cout << "\n===== MENU =====" << endl;
 		cout << "1. Show wallet information" << endl;
@@ -599,17 +648,16 @@ void showUserMenu(const string& username) { //                                  
 		cin >> num;
 
 		if (num == 1) {
-			myWallet.display();
+			mywallet.display();
 		} else if (num == 2) {
-			cout << "Transfer to: " << endl;
+			cout << "Transfer to [username]: ";
 			string rcp; 			//Người nhận
-			cin >> rcp;			
+			cin >> rcp;
 
-			cout << "Amount: " << endl;
+			cout << "\nAmount: ";
 			int amt;				//Số lượng chuyển
 			cin >> amt;
-
-			myWallet.setTransaction(rcp, amt);
+			transfer(username, rcp, amt);
 		}
 
 	} else if (choice == 5) {
@@ -730,14 +778,16 @@ bool loginAndHandleFirstLogin(const string& username, const string& password) {
 				inFile.close();
 				updatePasswordInFile(username, fakehash(newPass), "users.txt", "users_backup.txt");
 				ifstream inFile("users.txt");
+				if (isManager == 0) {
+					Wallet mywallet = createwallet(uname);
+					savewallettofile(mywallet, "wallet_id_" + uname + ".txt");
+				}
 				cout << "[✓] Complete change.\n";
 			}
 			else {
 				cout << "[✓] Successful login.\n";
 				if (isManager == 0) {
 				    inFile.close();
-					Wallet mywallet(uname);
-					mywallet.saveToFile();
                     showUserMenu(username);
 				} else {
 				    inFile.close();
