@@ -4,9 +4,59 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-
+#include <vector>
+#include <string>
+#include <map>
+#define OTP_H
 using namespace std;
 
+extern map<string, pair<string, time_t>> otpStore;
+string generateOTP(int size);
+int getTTL();
+void sendOTP(const string& username, int ttl);
+bool checkOTP(const string& username, const string& input, int ttl);
+map<string, pair<string, time_t>> otpStore;
+
+
+string generateOTP(int size = 6) {
+    static bool seeded = false;
+        if (!seeded) {
+        srand(static_cast<unsigned>(time(nullptr)));
+        seeded = true;
+    }
+
+    const string digits = "0123456789";
+    string result;
+    result.reserve(size);
+
+    for (int i = 0; i < size; ++i)
+        result += digits[rand() % digits.size()];
+
+    return result;
+}
+
+
+int getTTL() {
+    return 180;
+}
+
+void sendOTP(const string& username, int ttl = 180) {
+    string otp = generateOTP();
+    otpStore[username] = {otp, time(nullptr)};//***
+    cout << "Your OTP is: " << otp << " (Time limit: " << ttl << " seconds)" << endl;
+}
+
+bool checkOTP(const string& username, const string& input, int ttl = 180) {
+    auto it = otpStore.find(username);
+    if (it == otpStore.end()) return false;
+
+    const auto& entry = it->second;
+    double timeElapsed = difftime(time(nullptr), entry.second);
+    bool isExpired = timeElapsed > ttl;
+    bool isValid = !isExpired && entry.first == input;
+    cout << "Time elapsed: " << timeElapsed << " seconds, Expired: " << (isExpired ? "Yes" : "No") << endl;
+    return isValid;
+}
 class UserAccount {
 private:
 	string username;
@@ -19,7 +69,6 @@ private:
 public:
 	//constuctor co tham so ban dau->de khoi tao user.
 	UserAccount(const string& uname, const string& name, const string& phone, bool manager = false);
-	//dat mat khau.
 	void setPassword(const string& pw);
 	void setFirstlogin(bool status);
 	string getPasswordHash() const;
@@ -30,7 +79,6 @@ public:
 	bool getisManager() const;
 	bool getFirstlogin() const;
 	void printInfo() const;
-
 };
 
 UserAccount::UserAccount(const string& uname, const string& name, const string& phone, bool manager) {
@@ -78,6 +126,86 @@ void UserAccount::printInfo() const {
 	cout << "Is Manager: " << (isManager ? "Yes" : "No") << endl;
 	cout<< "First Login: " << (firstlogin ? "Yes" : "No") << endl;
 }
+
+class Wallet {
+private:
+    string wallet_id;       // ID của ví
+    string transaction;     // Ví dụ: A to B
+    int amount;             // Số lượng chuyển
+    int remainder;          // Số dư còn lại
+
+	void rollback(int temp_remainder) {
+        remainder = temp_remainder;
+        cout << "[Rollback] Khoi phuc so du ve: " << remainder << endl;
+    }
+
+public:
+    // Constructor
+    Wallet(const string& wid) {
+    	wallet_id = wid;
+    	transaction = "";
+    	remainder = 0;	
+	}
+
+	void IntermediaryTransactions(const string& ) {
+
+	} 
+
+	// Ghi vào file (Durability)
+    void saveToFile() const {
+        string filename = "Wallet_id_" + wallet_id + ".txt";
+        ofstream fout(filename);
+        if (!fout) {
+            cerr << "[Error] Khong the mo file " << filename << endl;
+            return;
+        }
+
+        fout << "Wallet ID       : " << wallet_id << endl;
+        fout << "Last Transaction: " << transaction << endl;
+        fout << "Remainder       : " << remainder << endl;
+
+        fout.close();
+    }
+
+    // Giao dịch chuyển tiền (Full ACID)
+    void setTransaction(const string& rcp, int amt) {
+        if (amt <= 0) {
+            cout << "[!] Invalid amount" << endl;
+            return;
+        }
+
+        int temp = remainder;
+
+        // Atomicity + Consistency
+        if (amt > remainder) {
+            cout << "[!] Your transaction was declined due to insufficient funds." << endl;
+            return;
+        }
+
+        // Xử lý tạm
+        remainder -= amt;
+        amount = amt;
+        transaction = rcp;
+
+        // Giả lập lỗi bất ngờ
+        // if (amt == 999) rollback(temp); return; // test rollback
+
+        // Durability
+        saveToFile();
+
+        cout << "Giao dich thanh cong: " << transaction << " voi so tien " << amount << endl;
+        cout << "So du con lai: " << remainder << endl;
+    }
+
+    // Hiển thị thông tin ví
+    void display() const {
+        cout << "\n=== WALLET ===" << endl;
+        cout << "Wallet ID       : " << wallet_id << endl;
+		cout << "Remainder       : " << remainder << endl;
+        cout << "Transaction	: " << (transaction.empty() ? "Empty" : transaction) << endl;
+    }
+};
+
 string fakehash(const string& input) {
 	string hashed;
 	for (char c : input) {
@@ -85,15 +213,6 @@ string fakehash(const string& input) {
 	}
 	return hashed;
 }
-
-/*string generateOTP(int length = 6) {
-    string num = "0123456789";
-	string OTP;
-	for (int i = 0;i < length;i++) {
-		OTP += num[rand() % num.size()];
-	}
-	return OTP;
-}*/
 
 string generateRandompassword(int length) {
 	string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -330,51 +449,6 @@ bool updatePhonenumberInFile(const string& username, const string& newPhonenumbe
 
 	return updated;
 }
-
-void showUserMenu(const string& username) {
-    cout << "\n===== USER MENU =====\n";
-	cout << "1. View personal information\n";
-	cout << "2. Change password\n";
-	cout << "3. Exit\n";
-	int choice;
-	cin >> choice;
-	cin.ignore();
-	if (choice == 1) {
-		ifstream file("users.txt");
-		string line;
-		while (getline(file, line)) {
-			stringstream ss(line);
-			string uname, fullname, phone, pw, wallet;
-			bool isManager, firstLogin;
-			getline(ss, uname, ',');
-			getline(ss, fullname, ',');
-			getline(ss, phone, ',');
-			getline(ss, pw, ',');
-			getline(ss, wallet, ',');
-			ss >> isManager;
-			ss.ignore();
-			ss >> firstLogin;
-			if (uname == username) {
-				cout << "\nUsername: " << uname
-					<< "\nFullname: " << fullname
-					<< "\nPhone: " << phone
-					<< "\nWallet ID: " << wallet
-					<< "\nRole: " << (isManager ? "Admin" : "User") << endl;
-				break;
-			}
-
-		}
-		file.close();
-	}
-	else if (choice == 2) {
-		cout << "New password: ";
-		string newPass;
-		getline(cin, newPass);
-		updatePasswordInFile(username, fakehash(newPass), "users.txt", "users_backup.txt");
-		cout << "[✓] Password changed successfully.\n";
-	}
-}
-
 bool checkusername (const string& username) {
     ifstream file("users.txt");
         string line;
@@ -447,90 +521,186 @@ void editUsername (const string& username) {
         perror("Error renaming temp file");
     }
 }
+void requestInfoChange(const string& username) {         //                                                         -FUNCTION TO REQUEST CHANGE OF INFO-
+    cout << "[!] Verify with OTP.\n";
+    sendOTP(username);
 
+    cout << "OTP sent. ";
+    string inputOtp;
+    getline(cin, inputOtp);
+
+    if (!checkOTP(username, inputOtp)) {
+        cout << "[X] Invalid OTP.\n";
+        return;
+    }
+
+    string newName, newPhone;
+    cout << "New name:";
+    getline(cin, newName);
+    cout << "New phone number: ";
+    getline(cin, newPhone);
+
+    ofstream reqFile("requests.txt", ios::app);
+    reqFile << username << "," << newName << "," << newPhone << "\n";
+    reqFile.close();
+    cout << "[✓] Request has been sent to admin.\n";
+}
+void showUserMenu(const string& username) { //                                                                            ~~ USER PANEL ~~
+    cout << "\n-=====- USER MENU -=====-\n";
+    cout << "1. View personal information\n";
+    cout << "2. Change password\n";
+    cout << "3. Request to change inforamtion\n";
+	cout << "4. Wallet\n";
+    cout << "5. Exit\n";
+    int choice;
+    cin >> choice;
+    cin.ignore();
+    if (choice == 1) {
+        ifstream file("users.txt");
+        string line;
+        while (getline(file, line)) {
+            stringstream ss(line);
+            string uname, fullname, phone, pw, wallet;
+            bool isManager, firstLogin;
+            getline(ss, uname, ',');
+            getline(ss, fullname, ',');
+            getline(ss, phone, ',');
+            getline(ss, pw, ',');
+            getline(ss, wallet, ',');
+            ss >> isManager;
+            ss.ignore();
+            ss >> firstLogin;
+            if (uname == username) {
+                cout << "\nUsername: " << uname;
+                cout << "\nFullname: " << fullname;
+                cout << "\nPhone: " << phone;
+                cout << "\nWallet ID: " << wallet;
+                cout << "\nRole: " << (isManager ? "Admin" : "User") << endl;
+                break;
+            }
+        }
+        file.close();
+    } else if (choice == 2) {
+        cout << "Enter the new passowrd: ";
+        string newPass;
+        getline(cin, newPass);
+        updatePasswordInFile(username, fakehash(newPass), "users.txt","users_backup.txt");
+        cout << "[✓] Password changed.\n";
+    } else if (choice == 3) {
+        requestInfoChange(username);
+    } else if (choice == 4) {
+		Wallet myWallet(username);
+
+		cout << "\n===== MENU =====" << endl;
+		cout << "1. Show wallet information" << endl;
+		cout << "2. Transfer" << endl;
+
+		int num;
+		cin >> num;
+
+		if (num == 1) {
+			myWallet.display();
+		} else if (num == 2) {
+			cout << "Transfer to: " << endl;
+			string rcp; 			//Người nhận
+			cin >> rcp;			
+
+			cout << "Amount: " << endl;
+			int amt;				//Số lượng chuyển
+			cin >> amt;
+
+			myWallet.setTransaction(rcp, amt);
+		}
+
+	} else if (choice == 5) {
+        return;
+    }
+}
 void showAdminMenu() {
-    cout << "\n===== ADMIN MENU =====\n";
-	cout << "1. View user list\n";
-	cout << "2. Create new account\n";
-	cout << "3. Edit user\n";
-	cout << "4. Exit\n";
-	int choice;
-	cin >> choice;
-	cin.ignore();
-	if (choice == 1) {
-		ifstream file("users.txt");
-		string line;
-		cout << "\n--- user list ---\n";
-		while (getline(file, line)) {
-			stringstream ss(line);
-			string uname, fullname, phone, pw, wallet;
-			bool isManager, firstLogin;
-			getline(ss, uname, ',');
-			getline(ss, fullname, ',');
-			getline(ss, phone, ',');
-			getline(ss, pw, ',');
-			getline(ss, wallet, ',');
-			ss >> isManager;
-			ss.ignore();
-			ss >> firstLogin;
-			cout << "Username: " << uname << ", Fullname: " << fullname
-				<< ", Phone: " << phone << ", Role: " << (isManager ? "Admin" : "User") << endl;
-		}
-		file.close();
-	}
-	else if (choice == 2) {
-		UserAccount user = createUserfrominput();
-		saveUsertofile(user, "users.txt");
-		cout << "[✓] Account created successfully \n";
-	}
-	else if (choice == 3) {
-		bool condition = true;
-		while (condition) {
-			cout << "Username: ";
-			string username;
-			cin >> username;
-			if (checkusername(username)) {
-				condition = false;
-				bool editMore = true;
-				while (editMore) {
-					cout << "The information you want to change is " << username << "\n";
-					cout << "1. Fullname\n2. Phonenumber\n3. Password\n";
-					int num;
-					cin >> num;
-					cin.ignore();
+    int choice;
+        cout << "\n-=====- ADMIN MENU -=====-\n";
+        cout << "1. View user list\n";
+        cout << "2. Create new account\n";
+        cout << "3. Approve information change requests\n";
+        cout << "4. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+        cin.ignore();
 
-					if (num == 1) {
-						string newFullname;
-						cout << "Enter new fullname: ";
-						getline(cin, newFullname);
-						updateFullnameInFile(username, newFullname, "users.txt", "users_backup.txt");
-					}
-					else if (num == 2) {
-						string newPhonenumber;
-						cout << "Enter new phone number: ";
-						getline(cin, newPhonenumber);
-						updatePhonenumberInFile(username, newPhonenumber, "users.txt", "users_backup.txt");
-					}
-					else if (num == 3) {
-						string newPassword;
-						cout << "Enter new password: ";
-						getline(cin, newPassword);
-						updatePasswordInFile(username, fakehash(newPassword), "users.txt", "users_backup.txt");
-					}
+        if (choice == 1) {
+            ifstream file("users.txt");
+            if (!file) {
+                cout << "[x] Failed to open users.txt\n";
+            } else {
+                string line;
+                cout << "\n--- User List ---\n";
+                while (getline(file, line)) {
+                    stringstream ss(line);
+                    string uname, fullname, phone, pw, wallet;
+                    bool isManager, firstLogin;
+                    getline(ss, uname, ',');
+                    getline(ss, fullname, ',');
+                    getline(ss, phone, ',');
+                    getline(ss, pw, ',');
+                    getline(ss, wallet, ',');
+                    ss >> isManager;
+                    ss.ignore();
+                    ss >> firstLogin;
+                    cout << "Username: " << uname
+                         << ", Fullname: " << fullname
+                         << ", Phone: " << phone
+                         << ", Role: " << (isManager ? "Admin" : "User") << endl;
+                }
+                file.close();
+            }
 
+        } else if (choice == 2) {
+            UserAccount user = createUserfrominput();
+            saveUsertofile(user, "users.txt");
+            cout << "[✓] Account created successfully.\n";
 
-					char choice;
-					cout << "Do you want to edit more? (y/n): ";
-					cin >> choice;
-					cin.ignore();
+        } else if (choice == 3) {
+            ifstream reqFile("requests.txt");
+            if (!reqFile) {
+                cout << "[x] Failed to open requests.txt\n";
+            } else {
+                vector<string> remainingRequests;
+                string line;
 
-					if (choice != 'y' && choice != 'Y') {
-						editMore = false;
-					}
-				}
-			}
-		}
-	}
+                while (getline(reqFile, line)) {
+                    stringstream ss(line);
+                    string uname, newName, newPhone;
+                    getline(ss, uname, ',');
+                    getline(ss, newName, ',');
+                    getline(ss, newPhone, ',');
+
+                    cout << "\n[!] Request from: " << uname;
+                    cout << "\nNew Name: " << newName;
+                    cout << "\nNew Phone number: " << newPhone << endl;
+
+                    cout << "Approve this change? (y/n): ";
+                    char approve;
+                    cin >> approve;
+                    cin.ignore();
+
+                    if (approve == 'y' || approve == 'Y') {
+                        updateFullnameInFile(uname,newName,"users.txt","users_backup.txt");
+						updatePhonenumberInFile(uname,newPhone,"users.txt","users_backup.txt");
+                        cout << "[✓] User information updated successfully.\n";
+                    } else {
+                        remainingRequests.push_back(line);
+                    }
+                }
+                reqFile.close();
+
+                ofstream outFile("requests.txt");
+                for (const string& req : remainingRequests)
+                    outFile << req << "\n";
+                outFile.close();
+            }
+		} else if (choice == 4) {
+            return;
+       }
 }
 
 bool loginAndHandleFirstLogin(const string& username, const string& password) {
@@ -566,6 +736,8 @@ bool loginAndHandleFirstLogin(const string& username, const string& password) {
 				cout << "[✓] Successful login.\n";
 				if (isManager == 0) {
 				    inFile.close();
+					Wallet mywallet(uname);
+					mywallet.saveToFile();
                     showUserMenu(username);
 				} else {
 				    inFile.close();
@@ -579,14 +751,13 @@ bool loginAndHandleFirstLogin(const string& username, const string& password) {
 	return false;
 }
 
-
-
 int main() {
     srand(time(0));
     int choice;
-    cout << "1. Register\n2. Sign Up\nMake choice: ";
+    cout << "1. Register\n2. Sign up\nMake choice: ";
     cin >> choice;
     cin.ignore();
+// function handle first login here
 
     if (choice == 1) {
         UserAccount user = createUserfrominput();
