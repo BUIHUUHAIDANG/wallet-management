@@ -5,7 +5,7 @@
 using namespace std;
 class Wallet {
 private:
-    string wallet_id;       // ID của ví
+    string wallet_id;       
     string transaction;     // Ví dụ: A to B
     string remainder;          // Số dư còn lại
 public:

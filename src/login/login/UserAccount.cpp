@@ -107,7 +107,7 @@ UserAccount createUserfrominput() {
 		getline(cin, uname);
 		if (duplicateuname(uname)) {
 			check = true;
-			cout << "[x] Username existed\n";
+			cout << "[x] Username existed \n";
 			continue;
 		}
 		check = false;

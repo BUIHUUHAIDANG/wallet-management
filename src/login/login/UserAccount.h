@@ -17,7 +17,7 @@ private:
 	bool isManager;
 	bool firstlogin;
 public:
-	//constuctor co tham so ban dau->de khoi tao user .
+	//constuctor co tham so ban dau->de khoi tao user  .
 	UserAccount(const string& uname, const string& name, const string& phone, bool manager = false);
 	//dat mat khau.
 	void setPassword(const string& pw);

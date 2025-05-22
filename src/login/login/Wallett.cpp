@@ -4,7 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <map>
-Wallet::Wallet(const string& wid /*wallet_id*/, const string& rmd /*remainder*/, const string& tst /*transaction*/) {
+Wallet::Wallet(const string& wid /*wallet_id*/, const string& rmd /*remainder*/, const string& tst ) {
 	wallet_id = wid;
 	remainder = rmd;
 	transaction = tst;
