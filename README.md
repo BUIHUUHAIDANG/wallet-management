@@ -30,7 +30,7 @@ Hệ thống quản lý đăng nhập, đăng ký tài khoản và ví điểm t
 ## 📂 Cấu Trúc Dữ Liệu  
 ### 1. 👤 Người Dùng (User)
 
-\`\`\`json
+```json
 {
   "username": "user123",
   "fullname": "Nguyễn Văn A",
@@ -40,19 +40,19 @@ Hệ thống quản lý đăng nhập, đăng ký tài khoản và ví điểm t
   "isManager": false,
   "firstlogin": true
 }
-\`\`\`
+```
 
 ---
 
 ### 2. 💰 Ví (Wallet)
 
-\`\`\`json
+```json
 {
  "wallet_id": "W001",
   "transaction": "user123 → user456",
   "remainder": "500"
 }
-\`\`\`
+```
 
 ---
 
