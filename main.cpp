@@ -124,7 +124,7 @@ void UserAccount::printInfo() const {
 	cout << "Phone Number: " << phonenumber << endl;
 	cout << "Wallet ID: " << WalletID << endl;
 	cout << "Is Manager: " << (isManager ? "Yes" : "No") << endl;
-	cout<< "First Login: " << (firstlogin ? "Yes" : "No") << endl;
+	cout << "First Login: " << (firstlogin ? "Yes" : "No") << endl;
 }
 
 class Wallet {
@@ -132,17 +132,17 @@ private:
     string wallet_id;       // ID của ví
     string transaction;     // Ví dụ: A to B
     int amount;             // Số lượng chuyển
-    int remainder;          // Số dư còn lại
+    string remainder;          // Số dư còn lại
 public:
     // Constructor
-    Wallet(const string& wid, const int& rmd, const string& tst);
+    Wallet(const string& wid, const string& rmd, const string& tst);
 	string getwalletid() const;
-	int getremainder() const;
+	string getremainder() const;
 	string gettransaction() const;
 	void display() const;
 };
 
-Wallet::Wallet(const string& wid /*wallet_id*/, const int& rmd /*remainder*/, const string& tst /*transaction*/) {
+Wallet::Wallet(const string& wid /*wallet_id*/, const string& rmd /*remainder*/, const string& tst /*transaction*/) {
 	wallet_id = wid;
 	remainder = rmd;
 	transaction = tst;
@@ -150,8 +150,8 @@ Wallet::Wallet(const string& wid /*wallet_id*/, const int& rmd /*remainder*/, co
 
 string Wallet::getwalletid () const {
 	return wallet_id;
-} 
-int Wallet::getremainder () const {
+}
+string Wallet::getremainder () const {
 	return remainder;
 }
 string Wallet::gettransaction () const {
@@ -164,53 +164,91 @@ void Wallet::display () const {
     cout << "Transaction	: " << (transaction.empty() ? "Empty" : transaction) << endl;
 }
 
-void receipt (const string& rcp, const int& amt) {
-	
+bool receipt(const string& depositor, const string& rcp, const int& amt) {
+	ifstream file("wallet_id_" + rcp + ".txt");
+	string wid, transaction, remainder;
+	getline(file, wid, ',');
+	getline(file, remainder, ',');
+	getline(file, transaction);
+
+	file.close();
+
+	int remain = stoi(remainder);
+
+	remain += amt;
+
+	remainder = to_string(remain);
+
+	transaction += "Receipt " + to_string(amt) + " from " + depositor + ",";
+
+	ofstream tempfile ("temp.txt");
+	tempfile << rcp << "," << remainder << "," << transaction;
+	tempfile.close();
+
+	if (remove(("wallet_id_" + rcp + ".txt").c_str()) != 0) {
+		perror("Error deleting original file");
+		cout << "Transaction not processed";
+		return false;
+	}
+	if (rename("temp.txt", (("wallet_id_" + rcp + ".txt").c_str())) != 0) {
+		perror("Error renaming temp file");
+		cout << "Transaction not processed";
+		return false;
+	}
+
+	return true;
 }
 
 void transfer(const string& depositor, const string& rcp, const int& amt) {
 	ifstream file("wallet_id_" + depositor + ".txt");
-	string wid_line, remainder_line, transaction_line;
-	getline(file, wid_line);
-	getline(file, remainder_line);
-	getline(file, transaction_line);
+	string wid, transaction, remainder;
+	getline(file, wid, ',');
+	getline(file, remainder, ',');
+	getline(file, transaction);
 
 	file.close();
-
-	string wid;
-	stringstream ss1(wid_line);
-	string tmp1;
-	ss1 >> tmp1 >> tmp1 >> wid;
-
-	int remainder = 0;
-    stringstream ss2(remainder_line);
-    string tmp2;
-    ss2 >> tmp2 >> tmp2 >> remainder;
-
-	string transaction;
-	stringstream ss3(transaction_line);
-	string tmp3;
-	ss3 >> tmp3 >> tmp3 >> transaction;
 
 	if (amt <= 0) {
 		cout << "[!] Invalid amount" << endl;
 		return;
 	}
 
-	int temp = remainder;
+	int remain = stoi(remainder);
 
 	// Atomicity + Consistency
-	if (amt > remainder) {
+	if (amt > remain) {
+		cout << amt << ", " << remain << ", " << remainder;
 		cout << "[!] Your transaction was declined due to insufficient funds." << endl;
 		return;
 	} else {
-		remainder -= amt;
-		transaction += "\nTransfer to " + rcp + " amount " + to_string(amt);
+
+		if(!receipt(depositor, rcp, amt)) {
+			cout << "Transaction not processed";
+			return;
+		}
+
+		remain -= amt;
+		remainder = to_string(remain);
+		transaction += "Transfer to " + rcp + " amount " + to_string(amt) + ",";
+
+
 		// Durability
 		ofstream tempfile("temp.txt");
-		tempfile << "Wallet ID       : " << depositor << endl << "Remainder       : " << remainder << endl << "Transaction	: " << transaction << endl;
-	}
+		tempfile << depositor << "," << remainder << "," << transaction;
+		tempfile.close();
+		if (remove(("wallet_id_" + depositor + ".txt").c_str()) != 0) {
+			perror("Error deleting original file");
+			cout << "Transaction not processed";
+			return;
+		}
+		if (rename("temp.txt", (("wallet_id_" + depositor + ".txt").c_str())) != 0) {
+			perror("Error renaming temp file");
+			cout << "Transaction not processed";
+			return;
+		}
 
+		cout << "Transferred " + to_string(amt) + " to " + rcp;
+	}
 }
 
 string fakehash(const string& input) {
@@ -259,9 +297,8 @@ bool duplicateuname(const string& user) {
 }
 
 Wallet createwallet(const string& uname) {
-	string wid;
-	string tst = "";
-	int rmd = 0;
+	string wid, tst;
+	string rmd = "0";
 
 	wid = uname;
 
@@ -302,9 +339,9 @@ UserAccount createUserfrominput() {
 	return user;
 }
 
-void savewallettofile (const Wallet& mywallet, const string& filename) {
+void savewallettofile(const Wallet& mywallet, const string& filename) {
 	ofstream file(filename, ios::app);
-	file << "Wallet ID       : " << mywallet.getwalletid() << endl << "Remainder       : " << mywallet.getremainder() << endl << "Transaction	: " << mywallet.gettransaction() << endl;
+	file << mywallet.getwalletid() << "," << mywallet.getremainder() << mywallet.gettransaction();
 	file.close();
 }
 
@@ -579,7 +616,7 @@ void showUserMenu(const string& username) { //                                  
     cout << "5. Exit\n";
     int choice;
     cin >> choice;
-    cin.ignore();
+	cin.ignore();
     if (choice == 1) {
         ifstream file("users.txt");
         string line;
@@ -614,31 +651,17 @@ void showUserMenu(const string& username) { //                                  
     } else if (choice == 3) {
         requestInfoChange(username);
     } else if (choice == 4) {
-		ifstream file("Wallet_id_" + username + ".txt");
-
-		string wid_line, remainder_line, transaction_line;
-		getline(file, wid_line);
-		getline(file, remainder_line);
-		getline(file, transaction_line);
+		ifstream file("wallet_id_" + username + ".txt");
+		string wid, transaction, temptrans, remainder;
+		getline(file, wid, ',');
+		getline(file, remainder, ',');
+		while(getline(file, transaction, ',')) {
+			temptrans += "\n" + transaction;
+		}
 
 		file.close();
 
-		string wid;
-		stringstream ss1(wid_line);
-		string tmp1;
-		ss1 >> tmp1 >> tmp1 >> wid;
-
-		int remainder = 0;
-        stringstream ss2(remainder_line);
-        string tmp2;
-        ss2 >> tmp2 >> tmp2 >> remainder;
-
-		string transaction;
-		stringstream ss3(transaction_line);
-		string tmp3;
-		ss3 >> tmp3 >> tmp3 >> transaction;
-
-		Wallet mywallet(wid, remainder, transaction);
+		Wallet mywallet (wid, remainder, temptrans);
 
 		cout << "\n===== MENU =====" << endl;
 		cout << "1. Show wallet information" << endl;
@@ -650,11 +673,22 @@ void showUserMenu(const string& username) { //                                  
 		if (num == 1) {
 			mywallet.display();
 		} else if (num == 2) {
-			cout << "Transfer to [username]: ";
-			string rcp; 			//Người nhận
-			cin >> rcp;
+			bool check = false;
+			string rcp;	//Người nhận
+			while (!check) {
+				cout << "Transfer to [username]: ";
+				string temprcp;
+				cin >> temprcp;
+				if (checkusername(temprcp)) {
+					check = true;
+					rcp = temprcp;
+				} else {
+					cout << "Unexist user";
+				}
+			}
 
-			cout << "\nAmount: ";
+
+			cout << "Amount: ";
 			int amt;				//Số lượng chuyển
 			cin >> amt;
 			transfer(username, rcp, amt);
@@ -695,9 +729,9 @@ void showAdminMenu() {
                     ss.ignore();
                     ss >> firstLogin;
                     cout << "Username: " << uname
-                         << ", Fullname: " << fullname
-                         << ", Phone: " << phone
-                         << ", Role: " << (isManager ? "Admin" : "User") << endl;
+                    << ", Fullname: " << fullname
+                    << ", Phone: " << phone
+                    << ", Role: " << (isManager ? "Admin" : "User") << endl;
                 }
                 file.close();
             }
