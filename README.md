@@ -18,10 +18,14 @@ Hệ thống quản lý đăng nhập, đăng ký tài khoản và ví điểm t
 :radio_button:Mật khẩu được băm ra bởi hàm (hash function).  
 :radio_button:Xác thực OTP khi đổi các thông tin cá nhân.  
 :radio_button:Không cho thay đổi Username.  
-### 👥 Phân Quyền  
-Quyền	                      User	   Admin  
-Xem thông tin cá nhân	       ✅	      ✅  
-Chuyển điểm	                 ✅	      ❌  
-Tạo tài khoản mới	           ❌	      ✅  
-Xem danh sách người dùng	   ❌	      ✅  
+## 👥 Phân Quyền
+
+| **Quyền**                   | **User** | **Admin** |
+|-----------------------------|:--------:|:---------:|
+| Xem thông tin cá nhân       | ✅       | ✅        |
+| Chuyển điểm                 | ✅       | ❌        |
+| Tạo tài khoản mới           | ❌       | ✅        |
+| Xem danh sách người dùng    | ❌       | ✅        |
+hải đăng
+
 
