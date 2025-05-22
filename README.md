@@ -10,7 +10,7 @@ Hệ thống quản lý đăng nhập, đăng ký tài khoản và ví điểm t
 Họ tên: Bùi Hữu Hải Đăng  
 Mã SV: N24DECE058  
 Nhiệm Vụ:  
--Định nghĩa lớp User, thực hiện chức năng tạo tài khoản, đăng nhập, giao diện ban đầu, hashFunction, tự động tạo một mật khẩu random, thay đổi mật khẩu khi đăng nhập lần đầu, tạo phương thức lưu trữ thông tin user và sao lưu thông tin user vào file dự phòng, chức năng cập nhập mật khẩu, fullname, phonenumber. 
+-Định nghĩa lớp User, thực hiện chức năng tạo tài khoản, đăng nhập, giao diện ban đầu, hashFunction, tự động tạo một mật khẩu random, thay đổi mật khẩu khi đăng nhập lần đầu, tạo phương thức lưu trữ thông tin user và sao lưu thông tin user vào file dự phòng, chức năng cập nhập mật khẩu, fullname, phonenumber.  
 -Viết Readme.md  
 ### Thành viên thứ hai:  
 Họ tên: Lê Trần Hoàng Minh  
