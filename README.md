@@ -109,9 +109,9 @@ sẽ hiện ra hai menu nếu bạn là user thì chương trình sẽ là menu 
    2. Change password: nơi user thay đổi password và sẽ gọi hàm cập nhật password vào file user.txt  
    3. Request to change information: nơi bạn sẽ nhập mã OTP để gửi yêu cầu muốn đổi thay đổi thông tin tới admin xong r sẽ nhập new fullname và new phonenumber thông tin thay đổi sẽ được lưu vào file request.txt đợi admin chấp nhận.  
    4. Wallet: sẽ hiện ra walletmenu trong wallet menu sẽ có 2 chức năng chính:  
-      -Show wallet information: nơi bạn có thể xem được WalletID, số dư, lịch sự chuyển điểm.  
-      -Trasfer: nơi bạn sẽ nhập WalletID của người nhận vào và số điểm bạn muốn chuyển nếu số dư của user đủ sẽ trừ số tiền hiện tại nếu số dư không đủ sẽ báo là không thể thực hiện giao dịch.  
-    -Menu Admin:  
+      1.Show wallet information: nơi bạn có thể xem được WalletID, số dư, lịch sự chuyển điểm.  
+      2.Trasfer: nơi bạn sẽ nhập WalletID của người nhận vào và số điểm bạn muốn chuyển nếu số dư của user đủ sẽ trừ số tiền hiện tại nếu số dư không đủ sẽ báo là không thể thực hiện giao dịch.  
+ -Menu Admin:  
 1. View users list: nơi admin có thể xem được mọi user trong chương trình.  
 2. Create new account: tạo hộ tài khoản mới cho user.  
 3. Approve information change requests: nơi admin có xác nhận thay đổi thông tin hay không.    
