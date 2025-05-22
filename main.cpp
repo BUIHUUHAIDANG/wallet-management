@@ -533,54 +533,6 @@ bool checkusername (const string& username) {
         return false;
 }
 
-void editUsername (const string& username) {
-    ifstream inFile("users.txt");
-    ofstream tempFile("temp.txt");
-    ofstream tempBackupFile("temp_backup.txt");
-    string line;
-    while (getline(inFile, line)) {
-        stringstream ss(line);
-        string uname, fullname, phone, pw, wallet;
-        bool isManager, firstLogin;
-        getline(ss, uname, ',');
-        getline(ss, fullname, ',');
-        getline(ss, phone, ',');
-        getline(ss, pw, ',');
-        getline(ss, wallet, ',');
-        ss >> isManager;
-        ss.ignore();
-        ss >> firstLogin;
-        if (uname == username) {
-            cout << "Doi thanh: ";
-            string temp;
-            cin >> temp;
-            uname = temp;
-            cout << "Username: " << temp << ", Fullname: " << fullname
-                << ", Phone: " << phone << ", Role: " << (isManager ? "Admin" : "User") << endl;
-        }
-        tempFile << uname << ',' << fullname << ',' << phone << ','
-            << pw << ',' << wallet << ',' << isManager << ',' << firstLogin << '\n';
-        tempBackupFile << uname << ',' << fullname << ',' << phone << ','
-            << pw << ',' << wallet << ',' << isManager << ',' << firstLogin << '\n';
-    }
-
-    inFile.close();
-    tempFile.close();
-    tempBackupFile.close();
-
-    if (remove("users.txt") != 0) {
-        perror("Error deleting original file");
-    }
-    if (rename("temp.txt", "users.txt") != 0) {
-        perror("Error renaming temp file");
-    }
-    if (remove("users_backup.txt") != 0) {
-        perror("Error deleting original file");
-    }
-    if (rename("temp_backup.txt", "users_backup.txt") != 0) {
-        perror("Error renaming temp file");
-    }
-}
 void requestInfoChange(const string& username) {         //                                                         -FUNCTION TO REQUEST CHANGE OF INFO-
     cout << "[!] Verify with OTP.\n";
     sendOTP(username);
