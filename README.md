@@ -5,6 +5,28 @@ Hệ thống quản lý đăng nhập, đăng ký tài khoản và ví điểm t
 ✅ Quản lý ví điểm thưởng (tích lũy, chuyển điểm)  
 ✅ Bảo mật 2 lớp (OTP) cho giao dịch quan trọng  
 ✅ Phân quyền người dùng (User/Admin)  
+## Phân công công việc  
+### Thành viên thứ nhất:  
+Họ tên: Bùi Hữu Hải Đăng  
+Mã SV: N24DECE058  
+Nhiệm Vụ:  
+-Định nghĩa lớp User, thực hiện chức năng tạo tài khoản, đăng nhập, giao diện ban đầu, hashFunction, tự động tạo một mật khẩu random, thay đổi mật khẩu khi đăng nhập lần đầu, tạo phương thức lưu trữ thông tin user và sao lưu thông tin user vào file dự phòng, chức năng cập nhập mật khẩu, fullname, phonenumber. 
+-Viết Readme.md  
+### Thành viên thứ hai:  
+Họ tên: Lê Trần Hoàng Minh  
+Mã SV: N24DECE082  
+Nhiệm Vụ:  
+- Chịu trách nhiệm cho phần phân quyền giữa user và admin, thiết kế Menu của User và Admin, thực hiện những chức năng như xem thông tin user và gửi yêu cầu thay đổi thông tin tới admin trong Menu user và xem thông tin tất cả user và chấp nhận yêu cầu thay đổi của users.  
+ ### Thành viên thứ ba:  
+ Họ tên: Vũ Anh Khoa  
+ Mã SV: N24DECE078  
+ Nhiệm vụ:  
+ - Định nghĩa lớp Ví, kiểm tra trùng tên và tìm user, thiết kế Menu Wallet với những chức năng như chuyển ví điểm thưởng từ ví A sang ví B, xem thông tin ví (số dư, lịch sử giao dịch) của user, tạo hàm lưu thông tin Ví điểm vào trong file mỗi user một file lưu trữ riêng.  
+### Thành viên thứ tư:  
+Họ tên: Nguyễn Gia Phát  
+Mã SV: N24DECE086  
+Nhiệm vụ: 
+-Tạo ra chức năng tự tạo ra OTP có thời gian giới hạn và mỗi user có một OTP riêng, tích vào hợp vào các chức năng thay đổi thông tin của các thành viên trong nhóm.  
 ## ⚙️ Các Tính Năng Chính  
 ### 🔐 Đăng Ký & Đăng Nhập  
 :radio_button:Tạo tài khoản mới (tự đăng ký hoặc admin tạo hộ).  
