@@ -1,4 +1,4 @@
-﻿
+
 #include "UserAccount.h"
 #include "Wallett.h"
 #include<iostream>
