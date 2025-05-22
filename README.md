@@ -18,7 +18,7 @@ Hệ thống quản lý đăng nhập, đăng ký tài khoản và ví điểm t
 :radio_button:Mật khẩu được băm ra bởi hàm (hash function).  
 :radio_button:Xác thực OTP khi đổi các thông tin cá nhân.  
 :radio_button:Không cho thay đổi Username.  
-## 👥 Phân Quyền
+### 👥 Phân Quyền
 
 | **Quyền**                   | **User** | **Admin** |
 |-----------------------------|:--------:|:---------:|
@@ -27,6 +27,17 @@ Hệ thống quản lý đăng nhập, đăng ký tài khoản và ví điểm t
 | Tạo tài khoản mới           | ❌       | ✅        |
 | Xem danh sách người dùng    | ❌       | ✅        |  
 
-hải đăng
+## 📂 Cấu Trúc Dữ Liệu  
+### 1. Người Dùng (User)  
+{
+  "username": "user123",
+  "fullname": "Nguyễn Văn A",
+  "passwordHash": "$2a$12$xyz...",
+  "phonenumber": "0912345678",
+  "WalletID": "W001",
+  "isManager": false,
+  "firstlogin": true
+}  
+
 
 
