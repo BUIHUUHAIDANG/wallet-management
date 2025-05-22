@@ -40,4 +40,13 @@ Hệ thống quản lý đăng nhập, đăng ký tài khoản và ví điểm t
   "firstlogin": true,  
 }
 
+### 2. Ví (Wallet)
+```json
+{
+wallet_id": "W001",  
+  "transaction": "user123 → user456",  
+  "remainder": "500"
+}
+
+
 
