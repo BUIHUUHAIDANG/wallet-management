@@ -36,7 +36,7 @@ Hệ thống quản lý đăng nhập, đăng ký tài khoản và ví điểm t
   "fullname": "Nguyễn Văn A",
   "passwordHash": "$2a$12$xyz...",
   "phonenumber": "0912345678",
-  "walletID": "W001",
+  "walletID": "WalletID+username",
   "isManager": false,
   "firstlogin": true
 }
@@ -48,12 +48,15 @@ Hệ thống quản lý đăng nhập, đăng ký tài khoản và ví điểm t
 
 ```json
 {
- "wallet_id": "W001",
+ "wallet_id": "WalletID+username",
   "transaction": "user123 → user456",
-  "remainder": "500"
+  "remainder": "1000000"
 }
 ```
 
----
+---  
+## 🛠️ Công Nghệ Sử Dụng  
+:radio_button: C++.  
+### 🚀 Hướng Dẫn Cài Đặt  
 
 
