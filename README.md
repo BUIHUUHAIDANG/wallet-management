@@ -57,6 +57,15 @@ Hệ thống quản lý đăng nhập, đăng ký tài khoản và ví điểm t
 ---  
 ## 🛠️ Công Nghệ Sử Dụng  
 :radio_button: C++.  
-### 🚀 Hướng Dẫn Cài Đặt  
+## 🚀 Hướng Dẫn Cài Đặt  
+### 1. Truy cập vào GitHub Repository của dự án:
+https://github.com/BUIHUUHAIDANG/wallet-management  
+### 2. Bấm vào nút Code màu xanh lá → chọn Download ZIP để tải về máy.  
+### 3. Giải nén file ZIP vừa tải.
+### 4. Mở thư mục đó trong terminal hoặc trình biên dịch để tiến hành dịch/chạy(chú ý đây là chương trình C++).  
+## 📜 Tài liệu tham khảo
+### 1. Chat GPT.  
+### 2. geeksforgeeks.org  
+### 3. stackoverflow.com  
 
 
