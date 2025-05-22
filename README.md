@@ -62,7 +62,7 @@ Hệ thống quản lý đăng nhập, đăng ký tài khoản và ví điểm t
 https://github.com/BUIHUUHAIDANG/wallet-management  
 ### 2. Bấm vào nút Code màu xanh lá → chọn Download ZIP để tải về máy.  
 ### 3. Giải nén file ZIP vừa tải.
-### 4. Mở thư mục đó trong terminal hoặc trình biên dịch để tiến hành dịch/chạy(chú ý đây là chương trình C++).  
+### 4. Mở thư mục đó trong terminal hoặc trình biên dịch để tiến hành dịch/chạy(chú ý đây là chương trình C++, mọi thư viện đều nắm trong source code nên không cần cài thêm thư viện nào bên ngoài cả).  
 ## 📜 Tài liệu tham khảo
 ### 1. Chat GPT.  
 ### 2. geeksforgeeks.org  
