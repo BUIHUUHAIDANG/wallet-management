@@ -28,25 +28,32 @@ Hệ thống quản lý đăng nhập, đăng ký tài khoản và ví điểm t
 | Xem danh sách người dùng    | ❌       | ✅        |  
 
 ## 📂 Cấu Trúc Dữ Liệu  
-### 1. Người Dùng (User)  
-```json
-{
-  "username": "user123",  
-  "fullname": "Nguyễn Văn A",  
-  "passwordHash": "$2a$12$xyz...",  
-  "phonenumber": "0912345678",  
-  "WalletID": "W001",  
-  "isManager": false,  
-  "firstlogin": true,  
-}```
+### 1. 👤 Người Dùng (User)
 
-### 2. Ví (Wallet)
-```json
+\`\`\`json
 {
-wallet_id": "W001",  
-  "transaction": "user123 → user456",  
+  "username": "user123",
+  "fullname": "Nguyễn Văn A",
+  "passwordHash": "$2a$12$xyz...",
+  "phonenumber": "0912345678",
+  "walletID": "W001",
+  "isManager": false,
+  "firstlogin": true
+}
+\`\`\`
+
+---
+
+### 2. 💰 Ví (Wallet)
+
+\`\`\`json
+{
+ "wallet_id": "W001",
+  "transaction": "user123 → user456",
   "remainder": "500"
 }
+\`\`\`
 
+---
 
 
