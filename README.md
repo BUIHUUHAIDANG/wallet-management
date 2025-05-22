@@ -117,6 +117,7 @@ sẽ hiện ra hai menu nếu bạn là user thì chương trình sẽ là menu 
 2. Create new account: tạo hộ tài khoản mới cho user.  
 3. Approve information change requests: nơi admin có xác nhận thay đổi thông tin hay không.
 ## Sơ đồ miêu tả chương trình  
+```
 +------------------------+
 | Khởi động chương trình |
 +------------------------+
@@ -157,7 +158,7 @@ Admin Menu:
   | - Create new account       |
   | - Approve info change reqs |
   +-----------------------------+
-
+```
 ## 📜 Tài liệu tham khảo
 ### 1. Youtube  
 ### 2. geeksforgeeks.org  
