@@ -29,15 +29,6 @@ Hệ thống quản lý đăng nhập, đăng ký tài khoản và ví điểm t
 
 ## 📂 Cấu Trúc Dữ Liệu  
 ### 1. Người Dùng (User)  
-{
-  "username": "user123",
-  "fullname": "Nguyễn Văn A",
-  "passwordHash": "$2a$12$xyz...",
-  "phonenumber": "0912345678",
-  "WalletID": "W001",
-  "isManager": false,
-  "firstlogin": true
-}  
-
+<pre> ```json { "username": "user123", "fullname": "Nguyễn Văn A", "passwordHash": "$2a$12$xyz...", "phonenumber": "0912345678", "WalletID": "W001", "isManager": false, "firstlogin": true } ``` </pre>
 
 
