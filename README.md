@@ -38,7 +38,7 @@ Hệ thống quản lý đăng nhập, đăng ký tài khoản và ví điểm t
   "WalletID": "W001",  
   "isManager": false,  
   "firstlogin": true,  
-}
+}```
 
 ### 2. Ví (Wallet)
 ```json
