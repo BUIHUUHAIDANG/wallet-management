@@ -26,6 +26,7 @@ Hệ thống quản lý đăng nhập, đăng ký tài khoản và ví điểm t
 | Chuyển điểm                 | ✅       | ❌        |
 | Tạo tài khoản mới           | ❌       | ✅        |
 | Xem danh sách người dùng    | ❌       | ✅        |  
+
 hải đăng
 
 
