@@ -1,4 +1,4 @@
-﻿#ifndef USER_ACCOUNT_H
+#ifndef USER_ACCOUNT_H
 #define USER_ACCOUNT_H
 
 #include<vector>
