@@ -217,7 +217,7 @@ void transfer(const string& depositor, const string& rcp, const int& amt) {
 
 	// Atomicity + Consistency
 	if (amt > remain) {
-		cout << amt << ", " << remain << ", " << remainder;
+//		cout << amt << ", " << remain << ", " << remainder;
 		cout << "[!] Your transaction was declined due to insufficient funds." << endl;
 		return;
 	} else {
@@ -298,7 +298,7 @@ bool duplicateuname(const string& user) {
 
 Wallet createwallet(const string& uname) {
 	string wid, tst;
-	string rmd = "0";
+	string rmd = "1000000";
 
 	wid = uname;
 
@@ -509,8 +509,6 @@ bool updatePhonenumberInFile(const string& username, const string& newPhonenumbe
 	return updated;
 }
 
-
-
 bool checkusername (const string& username) {
     ifstream file("users.txt");
         string line;
@@ -683,7 +681,7 @@ void showUserMenu(const string& username) { //                                  
 					check = true;
 					rcp = temprcp;
 				} else {
-					cout << "Unexist user";
+					cout << "Unexist user\n";
 				}
 			}
 
