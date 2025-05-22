@@ -88,6 +88,7 @@ Nhiệm vụ:
 user.txt: dùng để lưu trữ tất cả thông tin người dùng.  
 user_backup.txt: dùng để sao lưu dữ liệu thông tin tất cả người dùng để phục hồi dữ liệu nếu file gốc mất.   
 wallet_id_ + username + .txt:lưu trữ dữ liệu ví số dư và lịch sử chuyển điểm của người dùng.  
+request.txt: lưu những yêu cầu của user để thay đổi thông tin.  
 ## 🛠️ Công Nghệ Sử Dụng  
 :radio_button: C++.  
 ## 🚀 Hướng Dẫn Cài Đặt  
@@ -96,6 +97,24 @@ https://github.com/BUIHUUHAIDANG/wallet-management
 ### 2. Bấm vào nút Code màu xanh lá → chọn Download ZIP để tải về máy.  
 ### 3. Giải nén file ZIP vừa tải.
 ### 4. Mở thư mục đó trong terminal hoặc trình biên dịch để tiến hành dịch/chạy(chú ý đây là chương trình C++, mọi thư viện đều nắm trong source code nên không cần cài thêm thư viện nào bên ngoài cả).  
+## Mô tả cách chạy chương trình, kèm các thao tác thực hiện  
+### Chạy chương trình:
+Khi chạy chương trình cửa sổ terminal sẽ xuất hiện ra với 2 lựa chọn:  
+1. Register: Nơi bạn điền username, thông tin cá nhân(Fullname, phonenumber), password(có thể bỏ trống để có thể tạo ra mật khẩu tự động), sẽ hỏi bạn có phải admin hay ko ?.
+2. sign in: đây là khi bạn đã đăng kí thành công và đăng nhập nếu đây là lần đăng nhập lần đầu tiên của bạn chương trình sẽ gọi hàm changepassword để bạn thay đổi mật khẩu tự động thành mật khẩu mà bạn mong muốn và mất khẩu sẽ được hash để cho vào file user.txt để bảo mật.
+### Khi đăng nhập thành công:  
+sẽ hiện ra hai menu nếu bạn là user thì chương trình sẽ là menu user còn nếu bạn là admin thì chương trình sẽ là menu admin.  
+- Menu User:  
+   1. View personal information: nơi user có thể xem thông tin cá nhân của user
+   2. Change password: nơi user thay đổi password và sẽ gọi hàm cập nhật password vào file user.txt  
+   3. Request to change information: nơi bạn sẽ nhập mã OTP để gửi yêu cầu muốn đổi thay đổi thông tin tới admin xong r sẽ nhập new fullname và new phonenumber thông tin thay đổi sẽ được lưu vào file request.txt đợi admin chấp nhận.  
+   4. Wallet: sẽ hiện ra walletmenu trong wallet menu sẽ có 2 chức năng chính:  
+      -Show wallet information: nơi bạn có thể xem được WalletID, số dư, lịch sự chuyển điểm.  
+      -Trasfer: nơi bạn sẽ nhập WalletID của người nhận vào và số điểm bạn muốn chuyển nếu số dư của user đủ sẽ trừ số tiền hiện tại nếu số dư không đủ sẽ báo là không thể thực hiện giao dịch.  
+    -Menu Admin:  
+1. View users list: nơi admin có thể xem được mọi user trong chương trình.  
+2. Create new account: tạo hộ tài khoản mới cho user.  
+3. Approve information change requests: nơi admin có xác nhận thay đổi thông tin hay không.    
 ## 📜 Tài liệu tham khảo
 ### 1. Youtube  
 ### 2. geeksforgeeks.org  
