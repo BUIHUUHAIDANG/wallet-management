@@ -79,7 +79,7 @@ void transfer(const string& depositor, const string& rcp, const int& amt) {
 
 	// Atomicity + Consistency
 	if (amt > remain) {
-		cout << "[!] Your transaction was declined due to insufficient funds." << endl;
+		cout << "[!] Your transaction was declined due to insufficient funds.   " << endl;
 		return;
 	}
 	else {
