@@ -1,0 +1,3 @@
+haidang,dfdgsd,d gd,,WalletID_haidang,0,0
+khoa,sgef,Šgs,,WalletID_khoa,0,0
+huy,dfadf,ƒsfas,,WalletID_huy,1,0

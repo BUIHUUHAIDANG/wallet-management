@@ -1,0 +1,1 @@
+haidang,5000,Receipt 5000 from khoa,Transfer to khoa amount 1000000,
